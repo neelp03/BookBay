@@ -1,108 +1,30 @@
-# Template Firebase auth flow
+# Project Name
 
-Template starter with React Navigation and Firebase auth using React Context
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-# Preview
+## Description
 
-![../media/authflow.png](../media/authflow.png)
+BookBay offers a streamlined and secure mobile platform for textbook transactions within our school's community. Leveraging advanced technologies, the app ensures real-time functionality, a user-friendly interface, and a dependable rating system. By focusing on the specific needs of our campus, BookBay provides an efficient and dedicated space for buying and selling textbooks, revolutionizing the current landscape with a straightforward and effective solution.
 
-# Installation
+## Table of Contents
 
-1. Install [node.js](https://nodejs.org/en/)
-2. Install Expo
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-   ```jsx
-   npm install --global expo-cli
-   ```
+## Installation
 
-3. Download this repo
-4. Install deps on your template folder
+To install and set up the BookBay app, follow these steps:
 
-   ```jsx
-   npm install
-   ```
+1. Make sure you have Node.js installed on your machine. You can download it from the official website: [Node.js](https://nodejs.org/).
 
-5. Start the environtment
-
-   ```jsx
-   expo start
-   ```
-
-# Auth Flow
-
-### Firebase Setup
-
-- Set up a new firebase project
-- Go to Authentication and under Sign-in Method enable Email/Password
-- Fill this firebase config to your config inside `./src/navigation/AppNavigator.js`
-
-```jsx
-// Better put your these secret keys in .env file
-const firebaseConfig = {
-	apiKey: '',
-	authDomain: '',
-	databaseURL: '',
-	projectId: '',
-	storageBucket: '',
-	messagingSenderId: '',
-	appId: '',
-};
+2. Install Expo CLI globally and project dependencies by running the following command in your terminal:
+```
+	npm install -g expo-cli
+	npm i
 ```
 
-### Prebuilt UI Screens
+## License
 
-There are 3 screens included inside `./src/screens/auth` and one more thing its included with the firebase auth function, so you don't need to create the function. The ilustrations I use [undraw](https://undraw.co/)
-
-- Login screen `./src/screens/auth/login.tsx`
-- Register screen `./src/screens/auth/register.tsx`
-- Forget password screen `./src/screens/auth/forget.tsx`
-
-I personally use these screens on my project [TiktTeng](https://github.com/codingki/TikTeng) in early stages before the redesign, feel free to use these screens ❤️
-
-### React Navigation Auth Flow
-
-The checking logged users process is inside `./src/provider/AuthProvider` I use React Context, you can add more functions like get the data of the user and store it to the context (better static data, ex: uid)
-
-Inside the navigator `./src/navigation/AppNavigator.js`
-There's 2 stack navigator :
-
-- `<Auth/>` → for not logged in users stack
-- `<Main/>` → for logged in users stack
-- `<Loading/>` → when checking if the user is logged in or not loading screen
-
-```jsx
-export default () => {
-	const auth = useContext(AuthContext);
-	const user = auth.user;
-	return (
-		<NavigationContainer>
-			{user == null && <Loading />}
-			{user == false && <Auth />}
-			{user == true && <Main />}
-		</NavigationContainer>
-	);
-};
-```
-
-## Rapi UI
-
-![../media/hero.png](../media/hero.png)
-
-These UI components are provided by [Rapi UI](https://rapi-ui.kikiding.space/).
-Check the [documentation](https://rapi-ui.kikiding.space/docs/) for usage and more components.
-
-# File Managements
-
-These are the folders and the functionality
-
-```jsx
-/src/assets -> for media such as images, etc
-/src/components -> for components
-/src/navigation -> for React Navigation
-/src/provider -> for React Context
-/src/screens -> for Screens
-```
-
-if you find these useful don't forget to give it a star ⭐ and share it to your friends ❤️
-
-Reach me on [twitter](https://twitter.com/kikiding/)
+This project is licensed under the [MIT License](LICENSE).
