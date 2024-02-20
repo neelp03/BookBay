@@ -12,3 +12,4 @@ web-build/
 *.config.json
 # macOS
 .DS_Store
+node_modules
