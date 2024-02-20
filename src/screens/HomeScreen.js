@@ -7,17 +7,17 @@ import NewArrivalsCard from "../components/NewArrivalsCard";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthenticationModal from "../components/AuthenticationModal";
 import AuthContext from "../features/authContext";
-import ProductContext from "../features/productContext";
-import { getProducts } from "../features/firebase/product";
+import BookContext from "../features/bookContext";
+import { getBooks } from "../features/firebase/book";
 
 const Home = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const { isLoggedIn,currentUser} = useContext(AuthContext);
-  const {products,setProducts} = useContext(ProductContext);
+  const { isLoggedIn, currentUser } = useContext(AuthContext);
+  const { books, setBooks } = useContext(BookContext);
 
-  const fetchAllProducts = async () => {
-    const result = await getProducts()
-    setProducts(result)
+  const fetchAllbooks = async () => {
+    const result = await getBooks()
+    setBooks(result)
   }
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const Home = ({ navigation }) => {
       headerShown: false,
     });
 
-    fetchAllProducts()
+    fetchAllbooks()
   }, []);
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -34,7 +34,7 @@ const Home = ({ navigation }) => {
           <View className="bg-black rounded-full w-10 h-10 justify-center items-center">
             <MaterialIcons name="menu" size={24} color={"#fff"} />
           </View>
-          {!isLoggedIn &&(
+          {!isLoggedIn && (
             <Pressable onPress={() => setModalVisible(!modalVisible)} className="flex-row items-center justify-center border border-slate-400 rounded-full ">
               <Image
                 source={UserImage}
@@ -44,8 +44,8 @@ const Home = ({ navigation }) => {
                   backgroundColor: "#aaaaaa",
                   borderRadius: 50,
                 }}
-                />
-                <Text className="font-semibold py-2 pr-4 pl-2">Login</Text>
+              />
+              <Text className="font-semibold py-2 pr-4 pl-2">Login</Text>
             </Pressable>
           )}
         </View>
@@ -84,14 +84,14 @@ const Home = ({ navigation }) => {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
           >
-            {products?.map(product=>
-            <Pressable key={product.id} 
-            onPress={() => navigation.navigate("detailscreen",
-            {productId:product.id})}>
-              <NewArrivalsCard title={product.title} image={product.image} price={product.price} brand={product.brand} />
-            </Pressable>
-              )}
-            
+            {books?.map(book =>
+              <Pressable key={book.id}
+                onPress={() => navigation.navigate("detailscreen",
+                  { bookId: book.id })}>
+                <NewArrivalsCard title={book.title} image={book.image} price={book.price} author={book.author} />
+              </Pressable>
+            )}
+
           </ScrollView>
         </View>
         <AuthenticationModal
