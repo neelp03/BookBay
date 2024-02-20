@@ -1,10 +1,8 @@
 import React, { useContext } from "react";
-import { initializeApp, getApps } from "firebase/app";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthContext } from "../provider/AuthProvider";
-
-import config from "../../firebase.config.json";
+import { auth, db } from "../../firebase.config";
 
 // Main
 import Home from "../screens/Home";
@@ -16,20 +14,6 @@ import Register from "../screens/auth/Register";
 import ForgetPassword from "../screens/auth/ForgetPassword";
 
 import Loading from "../screens/utils/Loading";
-
-const firebaseConfig = {
-  apiKey: config.apiKey,
-  authDomain: config,
-  databaseURL: config.databaseURL,
-  projectId: config.projectId,
-  storageBucket: config.storageBucket,
-  messagingSenderId: config.messagingSenderId,
-  appId: config.appId
-};
-
-if (getApps().length === 0) {
-  initializeApp(firebaseConfig);
-}
 
 const AuthStack = createNativeStackNavigator();
 
@@ -63,13 +47,14 @@ const Main = () => {
 };
 
 export default () => {
-  const auth = useContext(AuthContext);
-  const user = auth.user;
+  const authContext = useContext(AuthContext);
+  const user = authContext.user;
+
   return (
     <NavigationContainer>
-      {user == null && <Loading />}
-      {user == false && <Auth />}
-      {user == true && <Main />}
+      {user === null && <Loading />}
+      {user === false && <Auth />}
+      {user === true && <Main />}
     </NavigationContainer>
   );
 };

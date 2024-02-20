@@ -6,7 +6,9 @@ import {
   KeyboardAvoidingView,
   Image,
 } from "react-native";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../../../firebase.config";
+import { sendPasswordResetEmail } from "firebase/auth";
+
 import {
   Layout,
   Text,
@@ -18,7 +20,6 @@ import {
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
-  const auth = getAuth();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
