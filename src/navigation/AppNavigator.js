@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthContext } from "../provider/AuthProvider";
-import { auth, db } from "../../firebase.config";
+import { auth } from "../../firebase.config";
 
 // Main
 import Home from "../screens/Home";

@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../firebase.config";
 
 const AuthContext = createContext();
 const AuthProvider = (props) => {
-  const auth = getAuth();
   // user null = loading
   const [user, setUser] = useState(null);
 
