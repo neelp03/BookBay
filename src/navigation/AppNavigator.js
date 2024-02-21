@@ -40,21 +40,6 @@ const Auth = () => {
   );
 };
 
-const MainStack = createNativeStackNavigator();
-
-const Main = () => {
-  return (
-    <MainStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <MainStack.Screen name="Home" component={Home} />
-      <MainStack.Screen name="SecondScreen" component={SecondScreen} />
-    </MainStack.Navigator>
-  );
-};
-
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
