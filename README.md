@@ -19,10 +19,13 @@ To install and set up the BookBay app, follow these steps:
 
 1. Make sure you have Node.js installed on your machine. You can download it from the official website: [Node.js](https://nodejs.org/).
 
-2. Install Expo CLI globally and project dependencies by running the following command in your terminal:
+2. Install project dependencies by running the following command in your terminal:
 ```
-	npm install -g expo-cli
 	npm i
+```
+If on macOS, install watchman via homebrew:
+```
+	brew install watchman
 ```
 
 ## License
