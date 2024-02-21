@@ -7,7 +7,7 @@ import {
   Image,
 } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../firebase.config";
+import { auth, db } from "../../../firebase.config";
 import {
   Layout,
   Text,
@@ -16,25 +16,47 @@ import {
   useTheme,
   themeColor,
 } from "react-native-rapi-ui";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [phoneNo, setPhoneNo] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function register() {
     setLoading(true);
-    await createUserWithEmailAndPassword(auth, email, password).catch(function (
-      error
-    ) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // ...
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const user = cred.user;
+      await setDoc(doc(db, "users", user.uid), {
+        name: name,
+        email: email,
+        phoneNo: phoneNo,
+      });
       setLoading(false);
-      alert(errorMessage);
-    });
+      alert("Registration successful!");
+    } catch (error) {
+      handleRegistrationError(error);
+      setLoading(false);
+      return;
+    }
+  }
+
+  function handleRegistrationError(error) {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    if (errorCode === "auth/weak-password") {
+      alert("The password is too weak.");
+    } else if (errorCode === "auth/email-already-in-use") {
+      alert("The email is already in use");
+    } else if (errorCode === "auth/invalid-email") {
+      alert("The email is invalid");
+    } else {
+      alert(errorCode, errorMessage);
+    }
   }
 
   return (
@@ -75,12 +97,33 @@ export default function ({ navigation }) {
               size="h3"
               style={{
                 alignSelf: "center",
-                padding: 30,
+                padding: 20,
               }}
             >
               Register
             </Text>
-            <Text>Email</Text>
+            <Text>Name</Text>
+            <TextInput
+              containerStyle={{ marginTop: 15 }}
+              placeholder="Enter your name"
+              value={name}
+              autoCapitalize="none"
+              autoCompleteType="off"
+              autoCorrect={false}
+              onChangeText={(text) => setName(text)}
+            />
+            <Text style={{ marginTop: 15 }}>Phone number</Text>
+            <TextInput
+              containerStyle={{ marginTop: 15 }}
+              placeholder="Enter your phone number"
+              value={phoneNo}
+              autoCapitalize="none"
+              autoCompleteType="off"
+              autoCorrect={false}
+              keyboardType="phone-pad"
+              onChangeText={(text) => setPhoneNo(text)}
+            />
+            <Text style={{ marginTop: 15 }}>Email</Text>
             <TextInput
               containerStyle={{ marginTop: 15 }}
               placeholder="Enter your email"
@@ -105,9 +148,7 @@ export default function ({ navigation }) {
             />
             <Button
               text={loading ? "Loading" : "Create an account"}
-              onPress={() => {
-                register();
-              }}
+              onPress={register}
               style={{
                 marginTop: 20,
               }}
