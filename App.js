@@ -3,6 +3,7 @@ import AppNavigator from "./src/navigation/AppNavigator";
 import { AuthProvider } from "./src/provider/AuthProvider";
 import { ThemeProvider } from "react-native-rapi-ui";
 import { LogBox } from "react-native";
+import { BookProvider } from "./src/provider/BookProvider";
 
 export default function App(props) {
   const images = [
@@ -23,7 +24,9 @@ export default function App(props) {
   return (
     <ThemeProvider images={images}>
       <AuthProvider>
-        <AppNavigator />
+        <BookProvider>
+          <AppNavigator />
+        </BookProvider>
       </AuthProvider>
     </ThemeProvider>
   );

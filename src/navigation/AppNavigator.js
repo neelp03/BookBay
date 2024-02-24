@@ -7,7 +7,6 @@ import { auth } from "../../firebase.config";
 
 // Main Screens
 import Home from "../screens/Home";
-import SecondScreen from "../screens/SecondScreen";
 
 // Auth Screens
 import Login from "../screens/auth/Login";
@@ -15,12 +14,12 @@ import Register from "../screens/auth/Register";
 import ForgetPassword from "../screens/auth/ForgetPassword";
 
 // Additional Tab Screens
-import SearchScreen from "../screens/SearchScreen";
-import CartScreen from "../screens/CartScreen";
-import OrdersScreen from "../screens/OrdersScreen";
-import ProfileScreen from "../screens/ProfileScreen";
-import SellScreen from "../screens/SellScreen";
-import SettingsScreen from "../screens/SettingsScreen";
+import SearchScreen from "../screens/Search";
+import CartScreen from "../screens/Cart";
+import OrdersScreen from "../screens/Orders";
+import ProfileScreen from "../screens/Profile";
+import SellScreen from "../screens/SellBook";
+import SettingsScreen from "../screens/Settings";
 
 import Loading from "../screens/utils/Loading";
 
