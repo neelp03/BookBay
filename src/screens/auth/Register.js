@@ -6,7 +6,7 @@ import {
   KeyboardAvoidingView,
   Image,
 } from "react-native";
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
 import { auth, db } from "../../../firebase.config";
 import {
   Layout,
@@ -28,42 +28,32 @@ export default function ({ navigation }) {
 
   async function register() {
     setLoading(true);
-    if (email.endsWith("@sjsu.edu")) {
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const user = cred.user;
-        // verify email
-        await sendEmailVerification();
-        await setDoc(doc(db, "users", user.uid), {
-          name: name,
-          email: email,
-          phoneNo: phoneNo,
-        });
-        setLoading(false);
-        alert("Registration successful!");
-      } catch (error) {
-        handleRegistrationError(error);
-        setLoading(false);
-        return;
-      }
-    } else {
-      alert("Please use your SJSU email to register");
+    if (!email.endsWith("@sjsu.edu")) {
+      alert("Please use your SJSU email to register.");
       setLoading(false);
       return;
     }
-  }
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const user = cred.user;
+      // Update to send verification email to the correct user
+      await sendEmailVerification(user, {
+        handleCodeInApp: true,
+        url: "https://cmpe133-project.firebaseapp.com"
+      });
+      // Store additional user info in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        name: name,
+        email: email,
+        phoneNo: phoneNo,
+      });
 
-  function handleRegistrationError(error) {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    if (errorCode === "auth/weak-password") {
-      alert("The password is too weak.");
-    } else if (errorCode === "auth/email-already-in-use") {
-      alert("The email is already in use");
-    } else if (errorCode === "auth/invalid-email") {
-      alert("The email is invalid");
-    } else {
-      alert(errorCode, errorMessage);
+      await signOut(auth);
+      alert("Registration successful! Please verify your email.");
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -208,7 +198,7 @@ export default function ({ navigation }) {
                     marginLeft: 5,
                   }}
                 >
-                  {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+                  {isDarkmode ? "☀️ Light Mode" : "🌑 Dark Mode"}
                 </Text>
               </TouchableOpacity>
             </View>
