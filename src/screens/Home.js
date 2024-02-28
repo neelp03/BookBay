@@ -44,21 +44,7 @@ export default function ({ navigation }) {
         {loading ? (
           <Text>Loading...</Text>
         ) : (
-          <FlatList
-            data={books}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => {/* Navigate to book details screen */ }}>
-                <View style={{ flexDirection: "row", alignItems: "center", padding: 10 }}>
-                  <Image
-                    source={{ uri: item.image }}
-                    style={{ width: 50, height: 50, marginRight: 10 }}
-                  />
-                  <Text>{item.title}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
+          
         )}
       </View>
     </Layout>
