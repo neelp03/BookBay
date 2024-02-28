@@ -6,7 +6,7 @@ import {
   KeyboardAvoidingView,
   Image,
 } from "react-native";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth, db } from "../../../firebase.config";
 import {
   Layout,
@@ -28,18 +28,26 @@ export default function ({ navigation }) {
 
   async function register() {
     setLoading(true);
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      const user = cred.user;
-      await setDoc(doc(db, "users", user.uid), {
-        name: name,
-        email: email,
-        phoneNo: phoneNo,
-      });
-      setLoading(false);
-      alert("Registration successful!");
-    } catch (error) {
-      handleRegistrationError(error);
+    if (email.endsWith("@sjsu.edu")) {
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const user = cred.user;
+        // verify email
+        await sendEmailVerification();
+        await setDoc(doc(db, "users", user.uid), {
+          name: name,
+          email: email,
+          phoneNo: phoneNo,
+        });
+        setLoading(false);
+        alert("Registration successful!");
+      } catch (error) {
+        handleRegistrationError(error);
+        setLoading(false);
+        return;
+      }
+    } else {
+      alert("Please use your SJSU email to register");
       setLoading(false);
       return;
     }
