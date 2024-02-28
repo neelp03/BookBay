@@ -6,7 +6,7 @@ import {
   KeyboardAvoidingView,
   Image,
 } from "react-native";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import {
   Layout,
   Text,
@@ -25,16 +25,18 @@ export default function ({ navigation }) {
 
   async function login() {
     setLoading(true);
-    await signInWithEmailAndPassword(auth, email, password).catch(function (
-      error
-    ) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // ...
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Check if the user's email is verified
+      if (!userCredential.user.emailVerified) {
+        await signOut(auth); // Log the user out
+        alert("Please verify your email before logging in.");
+      }
+    } catch (error) {
+      alert(error.message);
+    } finally {
       setLoading(false);
-      alert(errorMessage);
-    });
+    }
   }
 
   return (
