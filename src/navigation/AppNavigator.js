@@ -20,18 +20,17 @@ import OrdersScreen from "../screens/Orders";
 import ProfileScreen from "../screens/Profile";
 import SellScreen from "../screens/SellBook";
 import SettingsScreen from "../screens/Settings";
+import BookDetails from "../screens/BookDetails";
 
 import Loading from "../screens/utils/Loading";
 
 const AuthStack = createNativeStackNavigator();
+const MainStack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 const Auth = () => {
   return (
-    <AuthStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
       <AuthStack.Screen name="Login" component={Login} />
       <AuthStack.Screen name="Register" component={Register} />
       <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} />
@@ -39,15 +38,9 @@ const Auth = () => {
   );
 };
 
-const Tab = createBottomTabNavigator();
-
 const TabNavigator = () => {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen name="Cart" component={CartScreen} />
@@ -59,6 +52,15 @@ const TabNavigator = () => {
   );
 };
 
+const MainStackScreen = () => {
+  return (
+    <MainStack.Navigator screenOptions={{ headerShown: false }}>
+      <MainStack.Screen name="Tabs" component={TabNavigator} />
+      <MainStack.Screen name="BookDetails" component={BookDetails} />
+    </MainStack.Navigator>
+  );
+};
+
 export default () => {
   const authContext = useContext(AuthContext);
   const user = authContext.user;
@@ -67,7 +69,7 @@ export default () => {
     <NavigationContainer>
       {user === null && <Loading />}
       {user === false && <Auth />}
-      {user === true && <TabNavigator />}
+      {user && <MainStackScreen />}
     </NavigationContainer>
   );
 };

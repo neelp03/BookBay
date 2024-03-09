@@ -1,18 +1,15 @@
 import React, { useContext } from "react";
-import { View, Linking, FlatList, Image, TouchableOpacity } from "react-native";
+import { View, FlatList, Image, TouchableOpacity } from "react-native";
 import { getAuth, signOut } from "firebase/auth";
 import {
   Layout,
-  Button,
   Text,
   TopNav,
-  Section,
-  SectionContent,
   useTheme,
   themeColor,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { BookContext } from "../provider/BookProvider"
+import { BookContext } from "../provider/BookProvider";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -20,6 +17,10 @@ export default function ({ navigation }) {
 
   // Consume the books data from the BookContext
   const { books, loading } = useContext(BookContext);
+
+  const openBookDetails = (book) => {
+    navigation.navigate('BookDetails', { Book: book });
+  };
 
   return (
     <Layout>
@@ -33,11 +34,7 @@ export default function ({ navigation }) {
           />
         }
         rightAction={() => {
-          if (isDarkmode) {
-            setTheme("light");
-          } else {
-            setTheme("dark");
-          }
+          setTheme(isDarkmode ? "light" : "dark");
         }}
       />
       <View style={{ flex: 1 }}>
@@ -48,13 +45,13 @@ export default function ({ navigation }) {
             data={books}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => {/* Navigate to book details screen */ }}>
+              <TouchableOpacity onPress={() => openBookDetails(item)}>
                 <View style={{ flexDirection: "row", alignItems: "center", padding: 10 }}>
                   <Image
                     source={{ uri: item.image }}
                     style={{ width: 50, height: 50, marginRight: 10 }}
                   />
-                  <Text>{item.title}</Text>
+                  <Text>{item.Title}</Text>
                 </View>
               </TouchableOpacity>
             )}
