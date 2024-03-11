@@ -1,4 +1,37 @@
 {
+  "name": "bookbay",
+  "displayName": "BookBay",
+  "description": "BookBay is a mobile application that allows students to buy and sell books. It is a platform that connects students who want to sell their books with students who want to buy books. The application is designed to be user-friendly and easy to use. It is a great way for students to save money on textbooks and make some extra cash by selling their old books.",
+  "expo": {
+    "name": "BookBay",
+    "slug": "BookBay",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  },
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -28,6 +61,5 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
-  },
-  "private": true
+  }
 }
