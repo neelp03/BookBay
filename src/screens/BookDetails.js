@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, Image, StyleSheet } from "react-native";
+import { ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
 import {
   Layout,
   TopNav,
@@ -14,20 +14,17 @@ export default function ({ navigation, route }) {
   const { isDarkmode, setTheme } = useTheme();
   const { Book } = route.params;
 
-  // Ensure the 'Book' object has the required properties
-  if (!Book) {
-    throw new Error("No book data provided");
-    return (
-      <Layout>
-        <Text>Book data is unavailable.</Text>
-      </Layout>
-    );
-  }
+  // Function to handle the click on the seller's ID
+  const contactSeller = () => {
+    // Placeholder for future functionality
+    console.log("Seller ID:", Book.sellerId);
+    // Here you will eventually navigate to the chat screen or initiate contact
+  };
 
   return (
     <Layout>
       <TopNav
-        middleContent={Book.title}
+        middleContent="Book Details"
         leftContent={
           <Ionicons
             name="chevron-back"
@@ -39,24 +36,21 @@ export default function ({ navigation, route }) {
       />
 
       <ScrollView contentContainerStyle={styles.container}>
-        <Image 
-          source={{ uri: Book.imageUrl }}
+        <Image
+          source={{ uri: Book.image }}
           style={styles.image}
           resizeMode="contain"
         />
         <Text size="h3" style={styles.title}>{Book.title}</Text>
-        <Text size="h4" style={styles.author}>Author: {Book.author}</Text>
+        <Text size="h4" style={styles.subtitle}>Author: {Book.author}</Text>
+        <Text style={styles.details}>ISBN: {Book.isbn}</Text>
+        <Text style={styles.details}>Condition: {Book.condition}</Text>
+        <Text style={styles.details}>Course: {Book.course}</Text>
         <Text style={styles.price}>Price: ${Book.price}</Text>
-        <Text style={styles.description}>{Book.description || "No description available."}</Text>
-        
-        <Button 
-          text="Contact Seller"
-          onPress={() => {
-            // Implement the action to contact the seller
-          }}
-          style={styles.button}
-        />
-        {/* Additional buttons and information can be added here */}
+
+        <TouchableOpacity onPress={contactSeller} style={styles.sellerButton}>
+          <Text style={styles.sellerButtonText}>Contact Seller</Text>
+        </TouchableOpacity>
       </ScrollView>
     </Layout>
   );
@@ -72,19 +66,32 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 5,
+    fontWeight: 'bold',
+    fontSize: 24,
   },
-  author: {
+  subtitle: {
+    marginBottom: 5,
+    fontSize: 18,
+  },
+  details: {
+    fontSize: 16,
     marginBottom: 5,
   },
   price: {
+    fontSize: 18,
     marginBottom: 10,
   },
-  description: {
+  sellerButton: {
     marginTop: 10,
-    marginBottom: 20,
+    backgroundColor: themeColor.primary,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  button: {
-    marginTop: 10,
+  sellerButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

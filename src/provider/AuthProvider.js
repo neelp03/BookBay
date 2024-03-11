@@ -1,3 +1,8 @@
+/**
+ * @file AuthProvider.js
+ * @description A React context provider component for authentication
+ */
+
 import React, { createContext, useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase.config";

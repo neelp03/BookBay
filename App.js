@@ -1,9 +1,10 @@
 import React from "react";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { AuthProvider } from "./src/provider/AuthProvider";
+import { BookProvider } from "./src/provider/BookProvider";
+import { UserProvider } from "./src/provider/UserProvider";
 import { ThemeProvider } from "react-native-rapi-ui";
 import { LogBox } from "react-native";
-import { BookProvider } from "./src/provider/BookProvider";
 
 export default function App(props) {
   const images = [
@@ -25,7 +26,9 @@ export default function App(props) {
     <ThemeProvider images={images}>
       <AuthProvider>
         <BookProvider>
-          <AppNavigator />
+          <UserProvider>
+            <AppNavigator />
+          </UserProvider>
         </BookProvider>
       </AuthProvider>
     </ThemeProvider>

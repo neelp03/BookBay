@@ -36,6 +36,7 @@ export default function ({ navigation }) {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       const user = cred.user;
+      const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
       // Update to send verification email to the correct user
       await sendEmailVerification(user, {
         handleCodeInApp: true,
@@ -46,6 +47,7 @@ export default function ({ navigation }) {
         name: name,
         email: email,
         phoneNo: phoneNo,
+        avatar: avatarUrl,
       });
 
       await signOut(auth);
