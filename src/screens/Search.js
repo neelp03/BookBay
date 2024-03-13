@@ -45,8 +45,6 @@ export default function ({ navigation }) {
           justifyContent: "center",
         }}
       >
-        {/* This text using ubuntu font */}
-        <Text fontWeight="bold">This is the second screen</Text>
       </View>
     </Layout>
   );
