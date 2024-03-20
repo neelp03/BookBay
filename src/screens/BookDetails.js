@@ -37,7 +37,7 @@ export default function ({ navigation, route }) {
 
       <ScrollView contentContainerStyle={styles.container}>
         <Image
-          source={{ uri: Book.image }}
+          source={{ uri: Book.coverUrl }}
           style={styles.image}
           resizeMode="contain"
         />

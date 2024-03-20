@@ -3,7 +3,7 @@
  * @description A React context provider component for managing books data.
  */
 
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState, useCallback } from "react";
 import { collection, getDocs } from "firebase/firestore"; // Importing required functions
 import { db } from "../../firebase.config";
 
@@ -56,6 +56,14 @@ const BookProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  /**
+   * Refreshes the books data by fetching it from the database.
+   * @returns {Promise<void>} A promise that resolves when the books are refreshed.
+   */
+  const refreshBooks = useCallback(() => {
+    return fetchBooks();
+  });
 
   useEffect(() => {
     fetchBooks();

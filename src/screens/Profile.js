@@ -113,6 +113,9 @@ export default function ({ navigation }) {
   );
 }
 
+// TextStyle for the Text component imported from react-native-rapi-ui
+// it uses the default text font style, change the style to a google font
+// or any other font if needed
 const styles = StyleSheet.create({
   container: {
     flex: 1,
