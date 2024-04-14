@@ -15,7 +15,6 @@ import ForgetPassword from "../screens/auth/ForgetPassword";
 
 // Additional Tab Screens
 import SearchScreen from "../screens/Search";
-import CartScreen from "../screens/Cart";
 import OrdersScreen from "../screens/Orders";
 import ProfileScreen from "../screens/Profile";
 import SellScreen from "../screens/SellBook";
@@ -43,7 +42,6 @@ const TabNavigator = () => {
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Cart" component={CartScreen} />
       <Tab.Screen name="Orders" component={OrdersScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Sell" component={SellScreen} />

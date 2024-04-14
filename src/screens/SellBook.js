@@ -1,20 +1,65 @@
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { View, TextInput, StyleSheet, Button, Image, Alert, Modal } from "react-native";
 import {
   Layout,
   TopNav,
   Text,
-  themeColor,
   useTheme,
+  themeColor,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
+import { db } from "../../firebase.config"; 
+import { collection, addDoc } from "firebase/firestore";
+import { useUser } from "../provider/UserProvider";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
+  const { userInfo } = useUser();
+  const [bookDetails, setBookDetails] = useState({
+    title: "",
+    author: "",
+    isbn: "",
+    condition: "",
+    availability: "",
+    course: "",
+    price: "",
+    description: ""
+  });
+  const [coverUrl, setCoverUrl] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleChange = (name, value) => {
+    setBookDetails({ ...bookDetails, [name]: value });
+  };
+
+  const fetchCover = () => {
+    const url = `https://covers.openlibrary.org/b/isbn/${bookDetails.isbn}-M.jpg?default=false`;
+    setCoverUrl(url);
+    setModalVisible(true);
+  };
+
+  const handleSubmit = async () => {
+    const docData = {
+      ...bookDetails,
+      seller: userInfo.uid, // Assuming the useUser hook provides the user's UID
+      coverUrl: coverUrl
+    };
+
+    try {
+      await addDoc(collection(db, "books"), docData);
+      Alert.alert("Success", "Book added successfully!");
+      setModalVisible(false); // Close the modal
+      navigation.goBack(); // Or navigate to another screen as needed
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      Alert.alert("Error", "Could not add the book. Please try again.");
+    }
+  };
+
   return (
     <Layout>
       <TopNav
-        middleContent="Second Screen"
+        middleContent="Sell Book"
         leftContent={
           <Ionicons
             name="chevron-back"
@@ -30,24 +75,88 @@ export default function ({ navigation }) {
             color={isDarkmode ? themeColor.white100 : themeColor.dark}
           />
         }
-        rightAction={() => {
-          if (isDarkmode) {
-            setTheme("light");
-          } else {
-            setTheme("dark");
-          }
-        }}
+        rightAction={() => setTheme(isDarkmode ? "light" : "dark")}
       />
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {/* This text using ubuntu font */}
-        <Text fontWeight="bold">This is the second screen</Text>
+      <View style={styles.container}>
+        {/* Input fields for book details */}
+        {Object.keys(bookDetails).map((key) => (
+          key !== 'description' && (
+            <TextInput
+              key={key}
+              style={styles.input}
+              value={bookDetails[key]}
+              onChangeText={(value) => handleChange(key, value)}
+              placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+            />
+          )
+        ))}
+        <TextInput
+          style={styles.input}
+          value={bookDetails.description}
+          onChangeText={(value) => handleChange('description', value)}
+          placeholder="Description"
+          multiline
+        />
+        <Button title="Fetch Cover" onPress={fetchCover} />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Image source={{ uri: coverUrl }} style={styles.coverImage} />
+              <Button title="Confirm and Submit" onPress={handleSubmit} />
+              <Button title="Cancel" onPress={() => setModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
       </View>
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  input: {
+    width: '100%',
+    padding: 10,
+    marginVertical: 8,
+    borderWidth: 1,
+    borderColor: themeColor.grey200,
+    borderRadius: 5,
+  },
+  coverImage: {
+    width: 200,
+    height: 300,
+    resizeMode: 'contain',
+    marginBottom: 20,
+  },centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+});
