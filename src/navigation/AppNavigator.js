@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useTheme, themeColor } from "react-native-rapi-ui";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -37,8 +38,19 @@ const Auth = () => {
 };
 
 const TabNavigator = () => {
+  const { isDarkmode } = useTheme(); // Retrieve theme mode
+
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator 
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: isDarkmode ? themeColor.dark200 : '#fff', // Background color of the tab bar
+        },
+        tabBarActiveTintColor: isDarkmode ? '#fff' : '#333', // Active tab color
+        tabBarInactiveTintColor: isDarkmode ? '#888' : '#ccc', // Inactive tab color
+      }}
+    >
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen name="Sell" component={SellScreen} />

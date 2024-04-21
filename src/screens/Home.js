@@ -44,7 +44,7 @@ export default function ({ navigation }) {
             <TouchableOpacity 
               style={[
                 styles.bookItem, 
-                {backgroundColor: isDarkmode ? themeColor.dark600 : themeColor.light200}
+                {backgroundColor: isDarkmode ? themeColor.dark200 : themeColor.white}
               ]}
               onPress={() => openBookDetails(item)}
             >
@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
   bookItem: {
     flex: 1,
     margin: 10,
+    padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
