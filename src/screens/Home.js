@@ -2,7 +2,7 @@ import React, { useContext, useState, useCallback } from "react";
 import { View, FlatList, Image, TouchableOpacity, StyleSheet, RefreshControl } from "react-native";
 import { Layout, Text, TopNav, useTheme, themeColor } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { BookContext, refreshBooks } from "../provider/BookProvider";
+import { BookContext } from "../provider/BookProvider";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -20,8 +20,7 @@ export default function ({ navigation }) {
     }).catch((error) => {
       console.error(error);
       setRefreshing(false);
-    })
-    ;
+    });
   }, [refreshBooks]);
 
   return (
@@ -43,14 +42,29 @@ export default function ({ navigation }) {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity 
-              style={[styles.bookItem, {backgroundColor: isDarkmode ? themeColor.dark600 : themeColor.light200}]}
+              style={[
+                styles.bookItem, 
+                {backgroundColor: isDarkmode ? themeColor.dark600 : themeColor.light200}
+              ]}
               onPress={() => openBookDetails(item)}
             >
               <Image source={{ uri: item.coverUrl }} style={styles.bookImage} />
-              <Text style={[styles.bookTitle, {color: isDarkmode ? themeColor.white100 : themeColor.black}]}>{item.title}</Text>
-              <Text style={[styles.bookInfo, {color: isDarkmode ? themeColor.grey600 : themeColor.grey900}]}>{item.author}</Text>
-              <Text style={[styles.bookInfo, {color: isDarkmode ? themeColor.grey600 : themeColor.grey900}]}>ISBN: {item.isbn}</Text>
-              <Text style={[styles.bookPrice, {color: isDarkmode ? themeColor.white100 : themeColor.black}]}>${item.price}</Text>
+              <Text style={{
+                ...styles.bookTitle, 
+                color: isDarkmode ? themeColor.white100 : themeColor.black
+              }}>{item.title}</Text>
+              <Text style={{
+                ...styles.bookInfo, 
+                color: isDarkmode ? themeColor.grey600 : themeColor.grey900
+              }}>{item.author}</Text>
+              <Text style={{
+                ...styles.bookInfo, 
+                color: isDarkmode ? themeColor.grey600 : themeColor.grey900
+              }}>ISBN: {item.isbn}</Text>
+              <Text style={{
+                ...styles.bookPrice, 
+                color: isDarkmode ? themeColor.white100 : themeColor.black
+              }}>${item.price}</Text>
             </TouchableOpacity>
           )}
           numColumns={2}
