@@ -2,7 +2,7 @@ import React, { useContext, useState, useCallback } from "react";
 import { View, FlatList, Image, TouchableOpacity, StyleSheet, RefreshControl } from "react-native";
 import { Layout, Text, TopNav, useTheme, themeColor } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { BookContext } from "../provider/BookProvider";
+import { BookContext, refreshBooks } from "../provider/BookProvider";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -17,7 +17,11 @@ export default function ({ navigation }) {
     setRefreshing(true);
     refreshBooks().then(() => {
       setRefreshing(false);
-    });
+    }).catch((error) => {
+      console.error(error);
+      setRefreshing(false);
+    })
+    ;
   }, [refreshBooks]);
 
   return (

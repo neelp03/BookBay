@@ -3,7 +3,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from "../provider/AuthProvider";
-import { auth } from "../../firebase.config";
 
 // Main Screens
 import Home from "../screens/Home";
@@ -15,7 +14,6 @@ import ForgetPassword from "../screens/auth/ForgetPassword";
 
 // Additional Tab Screens
 import SearchScreen from "../screens/Search";
-import OrdersScreen from "../screens/Orders";
 import ProfileScreen from "../screens/Profile";
 import SellScreen from "../screens/SellBook";
 import SettingsScreen from "../screens/Settings";
@@ -25,6 +23,7 @@ import Loading from "../screens/utils/Loading";
 
 const AuthStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
+const SettingsStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const Auth = () => {
@@ -42,10 +41,8 @@ const TabNavigator = () => {
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Orders" component={OrdersScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Sell" component={SellScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen name="Settings" component={SettingsStackScreen} />
     </Tab.Navigator>
   );
 };
@@ -56,6 +53,15 @@ const MainStackScreen = () => {
       <MainStack.Screen name="Tabs" component={TabNavigator} />
       <MainStack.Screen name="BookDetails" component={BookDetails} />
     </MainStack.Navigator>
+  );
+};
+
+const SettingsStackScreen = () => {
+  return (
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen name="SettingsHome" component={SettingsScreen} options={{ headerShown: false }} />
+      <SettingsStack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+    </SettingsStack.Navigator>
   );
 };
 
