@@ -1,0 +1,21 @@
+import React, { useContext, useState } from 'react';
+import { View, FlatList, Text, TouchableOpacity } from 'react-native';
+import { MessageContext } from '../provider/MessageProvider'; // You'll create this
+
+export default function Message({ navigation }) {
+  const { conversations, loading } = useContext(MessageContext); // Assuming you have a context for messages
+
+  if (loading) return <Text>Loading messages...</Text>;
+
+  return (
+    <FlatList
+      data={conversations}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <TouchableOpacity onPress={() => navigation.navigate('Conversation', { conversationId: item.id })}>
+          <Text>{item.title}</Text>
+        </TouchableOpacity>
+      )}
+    />
+  );
+}

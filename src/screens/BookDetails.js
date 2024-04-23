@@ -16,9 +16,7 @@ export default function ({ navigation, route }) {
 
   // Function to handle the click on the seller's ID
   const contactSeller = () => {
-    // Placeholder for future functionality
-    console.log("Seller ID:", Book.sellerId);
-    // Here you will eventually navigate to the chat screen or initiate contact
+    navigation.navigate('MessageTab', { sellerId: Book.sellerId })
   };
 
   return (

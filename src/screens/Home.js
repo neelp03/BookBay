@@ -17,6 +17,9 @@ export default function ({ navigation }) {
     setRefreshing(true);
     refreshBooks().then(() => {
       setRefreshing(false);
+    }).catch((error) => {
+      console.error(error);
+      setRefreshing(false);
     });
   }, [refreshBooks]);
 
@@ -39,14 +42,29 @@ export default function ({ navigation }) {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity 
-              style={[styles.bookItem, {backgroundColor: isDarkmode ? themeColor.dark600 : themeColor.light200}]}
+              style={[
+                styles.bookItem, 
+                {backgroundColor: isDarkmode ? themeColor.dark200 : themeColor.white}
+              ]}
               onPress={() => openBookDetails(item)}
             >
               <Image source={{ uri: item.coverUrl }} style={styles.bookImage} />
-              <Text style={[styles.bookTitle, {color: isDarkmode ? themeColor.white100 : themeColor.black}]}>{item.title}</Text>
-              <Text style={[styles.bookInfo, {color: isDarkmode ? themeColor.grey600 : themeColor.grey900}]}>{item.author}</Text>
-              <Text style={[styles.bookInfo, {color: isDarkmode ? themeColor.grey600 : themeColor.grey900}]}>ISBN: {item.isbn}</Text>
-              <Text style={[styles.bookPrice, {color: isDarkmode ? themeColor.white100 : themeColor.black}]}>${item.price}</Text>
+              <Text style={{
+                ...styles.bookTitle, 
+                color: isDarkmode ? themeColor.white100 : themeColor.black
+              }}>{item.title}</Text>
+              <Text style={{
+                ...styles.bookInfo, 
+                color: isDarkmode ? themeColor.grey600 : themeColor.grey900
+              }}>{item.author}</Text>
+              <Text style={{
+                ...styles.bookInfo, 
+                color: isDarkmode ? themeColor.grey600 : themeColor.grey900
+              }}>ISBN: {item.isbn}</Text>
+              <Text style={{
+                ...styles.bookPrice, 
+                color: isDarkmode ? themeColor.white100 : themeColor.black
+              }}>${item.price}</Text>
             </TouchableOpacity>
           )}
           numColumns={2}
@@ -67,6 +85,7 @@ const styles = StyleSheet.create({
   bookItem: {
     flex: 1,
     margin: 10,
+    padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,

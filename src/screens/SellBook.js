@@ -8,7 +8,7 @@ import {
   themeColor,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { db } from "../../firebase.config"; 
+import { db } from "../../firebase.config";
 import { collection, addDoc } from "firebase/firestore";
 import { useUser } from "../provider/UserProvider";
 
@@ -33,6 +33,10 @@ export default function ({ navigation }) {
   };
 
   const fetchCover = () => {
+    if (!bookDetails.isbn) {
+      Alert.alert("ISBN Field Empty", "Please enter an ISBN number first.");
+      return;
+    }
     const url = `https://covers.openlibrary.org/b/isbn/${bookDetails.isbn}-M.jpg?default=false`;
     setCoverUrl(url);
     setModalVisible(true);
@@ -78,25 +82,25 @@ export default function ({ navigation }) {
         rightAction={() => setTheme(isDarkmode ? "light" : "dark")}
       />
       <View style={styles.container}>
-        {/* Input fields for book details */}
-        {Object.keys(bookDetails).map((key) => (
-          key !== 'description' && (
+        {Object.keys(bookDetails).map((key) => ((
             <TextInput
               key={key}
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  borderColor: isDarkmode ? "#a3a0a0" : themeColor.grey200,
+                  color: isDarkmode ? themeColor.white100 : themeColor.dark,
+                  backgroundColor: isDarkmode ? themeColor.dark600 : themeColor.light200,
+                },
+              ]}
               value={bookDetails[key]}
               onChangeText={(value) => handleChange(key, value)}
               placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+              placeholderTextColor={isDarkmode ? "#918e8e" : themeColor.dark} // Placeholder text color
             />
           )
         ))}
-        <TextInput
-          style={styles.input}
-          value={bookDetails.description}
-          onChangeText={(value) => handleChange('description', value)}
-          placeholder="Description"
-          multiline
-        />
+        
         <Button title="Fetch Cover" onPress={fetchCover} />
 
         <Modal
@@ -138,7 +142,7 @@ const styles = StyleSheet.create({
     height: 300,
     resizeMode: 'contain',
     marginBottom: 20,
-  },centeredView: {
+  }, centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

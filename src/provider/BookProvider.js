@@ -76,6 +76,7 @@ const BookProvider = ({ children }) => {
   const value = {
     books,
     loading,
+    refreshBooks,
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;
