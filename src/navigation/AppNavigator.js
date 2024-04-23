@@ -3,6 +3,7 @@ import { useTheme, themeColor } from "react-native-rapi-ui";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { MaterialIcons } from '@expo/vector-icons';
 import { AuthContext } from "../provider/AuthProvider";
 
 // Main Screens
@@ -38,18 +39,38 @@ const Auth = () => {
 };
 
 const TabNavigator = () => {
-  const { isDarkmode } = useTheme(); // Retrieve theme mode
+  const { isDarkmode } = useTheme();
 
   return (
     <Tab.Navigator 
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: isDarkmode ? themeColor.dark200 : '#fff', // Background color of the tab bar
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          switch (route.name) {
+            case 'Home':
+              iconName = 'home';  
+              break;
+            case 'Search':
+              iconName = 'search';  
+              break;
+            case 'Sell':
+              iconName = 'add-circle';
+              break;
+            case 'Settings':
+              iconName = 'settings';
+              break;
+            default:
+              iconName = 'error';
+          }
+          return <MaterialIcons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: isDarkmode ? '#fff' : '#333', // Active tab color
-        tabBarInactiveTintColor: isDarkmode ? '#888' : '#ccc', // Inactive tab color
-      }}
+        tabBarStyle: {
+          backgroundColor: isDarkmode ? themeColor.dark200 : themeColor.light100,
+        },
+        tabBarActiveTintColor: isDarkmode ? themeColor.light100 : themeColor.primary,
+        tabBarInactiveTintColor: isDarkmode ? themeColor.grey600 : themeColor.grey600,
+        headerShown: false,
+      })}
     >
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Search" component={SearchScreen} />
@@ -58,6 +79,7 @@ const TabNavigator = () => {
     </Tab.Navigator>
   );
 };
+
 
 const MainStackScreen = () => {
   return (

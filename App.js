@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { Text, View, ActivityIndicator } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts, Ubuntu_400Regular, Ubuntu_700Bold } from '@expo-google-fonts/ubuntu';
 import AppNavigator from "./src/navigation/AppNavigator";
 import { AuthProvider } from "./src/provider/AuthProvider";
 import { BookProvider } from "./src/provider/BookProvider";
 import { UserProvider } from "./src/provider/UserProvider";
 import { ThemeProvider } from "react-native-rapi-ui";
-import { LogBox } from "react-native";
 
-export default function App(props) {
+SplashScreen.preventAutoHideAsync();  // Prevent auto-hiding the splash screen
+
+export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  const [fontsLoaded, error] = useFonts({
+    Ubuntu_400Regular,
+    Ubuntu_700Bold,
+  });
+
   const images = [
     require("./assets/icon.png"),
     require("./assets/splash.png"),
@@ -15,12 +26,41 @@ export default function App(props) {
     require("./assets/forget.png"),
   ];
 
-  // Ignore firebase v9 AsyncStorage warning
-  React.useEffect(() => {
-    LogBox.ignoreLogs([
-      "AsyncStorage has been extracted from react-native core and will be removed in a future release. It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. See https://github.com/react-native-async-storage/async-storage",
-    ]);
-  }, []);
+
+  useEffect(() => {
+    async function prepare() {
+      // Prevent auto-hiding the splash screen
+      await SplashScreen.preventAutoHideAsync();
+
+      if (!fontsLoaded) {
+        console.log('Fonts are not loaded:', error);
+        setTimeout(() => {
+          console.log("Font loading error", "Unable to load fonts, continuing without them.");
+          setAppIsReady(true);
+        }, 5000);
+      } else {
+        console.log('Fonts are loaded');
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (appIsReady && fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [appIsReady, fontsLoaded]);
+
+  if (!appIsReady || !fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
 
   return (
     <ThemeProvider images={images}>

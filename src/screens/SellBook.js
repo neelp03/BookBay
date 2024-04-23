@@ -88,15 +88,15 @@ export default function ({ navigation }) {
               style={[
                 styles.input,
                 {
-                  borderColor: isDarkmode ? themeColor.grey700 : themeColor.grey200, // Example for border color
-                  color: isDarkmode ? themeColor.white100 : themeColor.dark, // Text color
-                  backgroundColor: isDarkmode ? themeColor.dark600 : themeColor.light200, // Background color
+                  borderColor: isDarkmode ? "#a3a0a0" : themeColor.grey200,
+                  color: isDarkmode ? themeColor.white100 : themeColor.dark,
+                  backgroundColor: isDarkmode ? themeColor.dark600 : themeColor.light200,
                 },
               ]}
               value={bookDetails[key]}
               onChangeText={(value) => handleChange(key, value)}
               placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-              placeholderTextColor={isDarkmode ? themeColor.grey600 : themeColor.dark} // Placeholder text color
+              placeholderTextColor={isDarkmode ? "#918e8e" : themeColor.dark} // Placeholder text color
             />
           )
         ))}
