@@ -179,7 +179,7 @@ export default function ({ navigation }) {
                     marginLeft: 5,
                   }}
                 >
-                  {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+                  {isDarkmode ? "☀️ Light Mode" : "🌑 Dark Mode"}
                 </Text>
               </TouchableOpacity>
             </View>
