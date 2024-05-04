@@ -49,13 +49,14 @@ export default function ({ navigation }) {
         }}
       />
       <View style={styles.container}>
-        <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Profile')}>
+        <TouchableOpacity style={{ ...styles.option, borderBottomColor: isDarkmode ? themeColor.white200 : themeColor.dark }} onPress={() => navigation.navigate('Profile')}>
           <Text>Profile</Text>
-          <Ionicons name="chevron-forward" size={20} color={themeColor.grey} />
+          <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={handleSignOut}>
-          <Text>Sign Out</Text>
-          <Ionicons name="chevron-forward" size={20} color={themeColor.grey} />
+
+        <TouchableOpacity style={{ ...styles.option, borderBottomColor: isDarkmode ? themeColor.white200 : themeColor.dark }} onPress={handleSignOut}>
+          <Text style={{ color: themeColor.danger }}>Sign Out</Text>
+          <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />
         </TouchableOpacity>
       </View>
     </Layout>
@@ -74,6 +75,5 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: themeColor.grey200,
   },
 });

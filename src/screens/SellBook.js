@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Button, Image, Alert, Modal } from "react-native";
+import { View, StyleSheet, Image, Alert, Modal } from "react-native";
 import {
   Layout,
   TopNav,
-  Text,
+  TextInput,
   useTheme,
   themeColor,
+  Button,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
 import { db } from "../../firebase.config";
@@ -33,10 +34,6 @@ export default function ({ navigation }) {
   };
 
   const fetchCover = () => {
-    if (!bookDetails.isbn) {
-      Alert.alert("ISBN Field Empty", "Please enter an ISBN number first.");
-      return;
-    }
     const url = `https://covers.openlibrary.org/b/isbn/${bookDetails.isbn}-M.jpg?default=false`;
     setCoverUrl(url);
     setModalVisible(true);
@@ -81,27 +78,30 @@ export default function ({ navigation }) {
         }
         rightAction={() => setTheme(isDarkmode ? "light" : "dark")}
       />
-      <View style={styles.container}>
+      <View
+        style={{
+          flex: 3,
+          padding: 20,
+          backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+        }}
+      >
         {Object.keys(bookDetails).map((key) => ((
-            <TextInput
-              key={key}
-              style={[
-                styles.input,
-                {
-                  borderColor: isDarkmode ? "#a3a0a0" : themeColor.grey200,
-                  color: isDarkmode ? themeColor.white100 : themeColor.dark,
-                  backgroundColor: isDarkmode ? themeColor.dark600 : themeColor.light200,
-                },
-              ]}
-              value={bookDetails[key]}
-              onChangeText={(value) => handleChange(key, value)}
-              placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-              placeholderTextColor={isDarkmode ? "#918e8e" : themeColor.dark} // Placeholder text color
-            />
-          )
+          <TextInput
+            key={key}
+            containerStyle={{ marginTop: 15 }}
+            value={bookDetails[key]}
+            onChangeText={(value) => handleChange(key, value)}
+            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+          />
+        )
         ))}
-        
-        <Button title="Fetch Cover" onPress={fetchCover} />
+
+        <Button
+          text="Fetch Cover"
+          onPress={fetchCover}
+          style={{ marginTop: 20 }}
+          disabled={!bookDetails.isbn}
+        />
 
         <Modal
           animationType="slide"
@@ -113,10 +113,33 @@ export default function ({ navigation }) {
           }}
         >
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Image source={{ uri: coverUrl }} style={styles.coverImage} />
-              <Button title="Confirm and Submit" onPress={handleSubmit} />
-              <Button title="Cancel" onPress={() => setModalVisible(false)} />
+            <View style={{...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,}}>
+              <Image 
+              source={{ uri: coverUrl }} 
+              style={{
+                width: 200,
+                height: 300,
+                resizeMode: 'contain',
+                marginBottom: 20,
+                borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
+                borderWidth: 1,
+                borderRadius: 8,
+              }}
+              />
+              <Button
+                text="Submit"
+                onPress={handleSubmit}
+                style={{
+                  marginTop: 20,
+                }}
+              />
+              <Button
+                text="Cancel"
+                onPress={() => setModalVisible(false)}
+                style={{
+                  marginTop: 20,
+                }}
+              />
             </View>
           </View>
         </Modal>
@@ -126,23 +149,7 @@ export default function ({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-  input: {
-    width: '100%',
-    padding: 10,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: themeColor.grey200,
-    borderRadius: 5,
-  },
-  coverImage: {
-    width: 200,
-    height: 300,
-    resizeMode: 'contain',
-    marginBottom: 20,
-  }, centeredView: {
+  centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -150,11 +157,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "#fff",
     shadowOffset: {
       width: 0,
       height: 2

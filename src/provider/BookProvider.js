@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useEffect, useState, useCallback } from "react";
-import { collection, getDocs } from "firebase/firestore"; // Importing required functions
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase.config";
 
 /**
@@ -58,6 +58,48 @@ const BookProvider = ({ children }) => {
   };
 
   /**
+   * Searches for books in the database based on the search query and field.
+   * @param {string} searchQuery - The search query.
+   * @param {string} field - The field to search in.
+   * @returns {Promise<void>} A promise that resolves when the books are searched.
+   */
+  const searchBooks = async (searchQuery, field) => {
+    setLoading(true);
+    try {
+      let booksQuery;
+      if (field === "isbn") {
+        // Exact matching for ISBN
+        booksQuery = query(collection(db, "books"), where(field, "==", searchQuery));
+      } else {
+        // Partial matching for other fields
+        booksQuery = query(
+          collection(db, "books"),
+          where(field, ">=", searchQuery),
+          where(field, "<=", searchQuery + '\uf8ff')
+        );
+      }
+
+      const snapshot = await getDocs(booksQuery);
+      let searchedBooks = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      if (field !== "isbn") {
+        // Sorting by relevance only for non-ISBN fields
+        searchedBooks.sort((a, b) => Math.abs(a[field].length - searchQuery.length) - Math.abs(b[field].length - searchQuery.length));
+      }
+
+      setBooks(searchedBooks);
+    } catch (error) {
+      console.error("Error searching books:", error);
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
    * Refreshes the books data by fetching it from the database.
    * @returns {Promise<void>} A promise that resolves when the books are refreshed.
    */
@@ -77,6 +119,7 @@ const BookProvider = ({ children }) => {
     books,
     loading,
     refreshBooks,
+    searchBooks
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;
