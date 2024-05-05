@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, Image, StyleSheet } from "react-native";
 import {
   Layout,
   TopNav,
@@ -39,16 +39,25 @@ export default function ({ navigation, route }) {
           style={styles.image}
           resizeMode="contain"
         />
-        <Text size="h3" style={styles.title}>{Book.title}</Text>
-        <Text size="h4" style={styles.subtitle}>Author: {Book.author}</Text>
-        <Text style={styles.details}>ISBN: {Book.isbn}</Text>
-        <Text style={styles.details}>Condition: {Book.condition}</Text>
-        <Text style={styles.details}>Course: {Book.course}</Text>
-        <Text style={styles.price}>Price: ${Book.price}</Text>
+        {/* if author field is empty, dont show author */}
+        <Text fontWeight="bold" size="xl" style={{ marginTop: 20 }}>
+          {Book.title} {Book.author ? `by ${Book.author}` : ""}
+        </Text>
+        <Text fontWeight="light" style={{ marginTop: 10, color:themeColor.gray400 }}>
+          {Book.description}
+        </Text>
+        <Text fontWeight="light" style={{ marginTop: 10 }}>
+          Condition: {Book.condition}
+        </Text>
+        <Text fontWeight="medium" size="xl" style={{ marginTop: 10 }}>
+          ${Book.price}
+        </Text>
 
-        <TouchableOpacity onPress={contactSeller} style={styles.sellerButton}>
-          <Text style={styles.sellerButtonText}>Contact Seller</Text>
-        </TouchableOpacity>
+        <Button
+          text="Contact Seller"
+          onPress={contactSeller}
+          style={{ marginTop: 20 }}
+        />
       </ScrollView>
     </Layout>
   );
@@ -61,35 +70,5 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 300,
-  },
-  title: {
-    marginTop: 20,
-    marginBottom: 5,
-    fontWeight: 'bold',
-    fontSize: 24,
-  },
-  subtitle: {
-    marginBottom: 5,
-    fontSize: 18,
-  },
-  details: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  price: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  sellerButton: {
-    marginTop: 10,
-    backgroundColor: themeColor.primary,
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sellerButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { View, StyleSheet, Image, Alert, Modal } from "react-native";
 import {
   Layout,
@@ -9,9 +9,8 @@ import {
   Button,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { db } from "../../firebase.config";
-import { collection, addDoc } from "firebase/firestore";
 import { useUser } from "../provider/UserProvider";
+import { BookContext } from "../provider/BookProvider";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -28,6 +27,7 @@ export default function ({ navigation }) {
   });
   const [coverUrl, setCoverUrl] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const { addBook } = useContext(BookContext);
 
   const handleChange = (name, value) => {
     setBookDetails({ ...bookDetails, [name]: value });
@@ -47,10 +47,10 @@ export default function ({ navigation }) {
     };
 
     try {
-      await addDoc(collection(db, "books"), docData);
+      addBook(docData);
       Alert.alert("Success", "Book added successfully!");
-      setModalVisible(false); // Close the modal
-      navigation.goBack(); // Or navigate to another screen as needed
+      setModalVisible(false);
+      navigation.goBack();
     } catch (error) {
       console.error("Error adding document: ", error);
       Alert.alert("Error", "Could not add the book. Please try again.");

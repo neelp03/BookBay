@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useEffect, useState, useCallback } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase.config";
 
 /**
@@ -112,6 +112,36 @@ const BookProvider = ({ children }) => {
   }, []);
 
   /**
+   * Adds a new book to the database.
+   * @param {Book} book - The book to add.
+   * @returns {Promise<void>}
+   */
+  const addBook = async (book) => {
+    try {
+      const booksCollectionRef = collection(db, "books");
+      await addDoc(booksCollectionRef, book);
+      await fetchBooks();
+    } catch (error) {
+      console.error("Error adding book:", error);
+    }
+  };
+
+  /**
+   * Removes a book from the database.
+   * @param {string} bookId - The ID of the book to remove.
+   * @returns {Promise<void>}
+   */
+  const removeBook = async (bookId) => {
+    try {
+      const bookRef = doc(db, "books", bookId);
+      await deleteDoc(bookRef);
+      await fetchBooks();
+    } catch (error) {
+      console.error("Error removing book:", error);
+    }
+  };
+
+  /**
    * The value provided by the BooksProvider context.
    * @type {BookContextValue}
    */
@@ -119,7 +149,9 @@ const BookProvider = ({ children }) => {
     books,
     loading,
     refreshBooks,
-    searchBooks
+    searchBooks,
+    addBook,
+    removeBook,
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;
