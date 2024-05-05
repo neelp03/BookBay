@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../provider/UserProvider";
 import { BookContext } from "../provider/BookProvider";
+import CustomTopNav from "../components/CustomTopNav";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -59,25 +60,7 @@ export default function ({ navigation }) {
 
   return (
     <Layout>
-      <TopNav
-        middleContent="Sell Book"
-        leftContent={
-          <Ionicons
-            name="chevron-back"
-            size={20}
-            color={isDarkmode ? themeColor.white100 : themeColor.dark}
-          />
-        }
-        leftAction={() => navigation.goBack()}
-        rightContent={
-          <Ionicons
-            name={isDarkmode ? "sunny" : "moon"}
-            size={20}
-            color={isDarkmode ? themeColor.white100 : themeColor.dark}
-          />
-        }
-        rightAction={() => setTheme(isDarkmode ? "light" : "dark")}
-      />
+      <CustomTopNav title="Sell Book" navigation={navigation} />
       <View
         style={{
           flex: 3,

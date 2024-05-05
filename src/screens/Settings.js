@@ -9,6 +9,7 @@ import {
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
 import { getAuth, signOut } from "firebase/auth"; // Assuming you are using Firebase Auth
+import CustomTopNav from "../components/CustomTopNav";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -27,27 +28,7 @@ export default function ({ navigation }) {
 
   return (
     <Layout>
-      <TopNav
-        middleContent="Settings"
-        leftContent={
-          <Ionicons
-            name="chevron-back"
-            size={20}
-            color={isDarkmode ? themeColor.white100 : themeColor.dark}
-          />
-        }
-        leftAction={() => navigation.goBack()}
-        rightContent={
-          <Ionicons
-            name={isDarkmode ? "sunny" : "moon"}
-            size={20}
-            color={isDarkmode ? themeColor.white100 : themeColor.dark}
-          />
-        }
-        rightAction={() => {
-          setTheme(isDarkmode ? "light" : "dark");
-        }}
-      />
+      <CustomTopNav title="Settings" navigation={navigation} />
       <View style={styles.container}>
         <TouchableOpacity style={{ ...styles.option, borderBottomColor: isDarkmode ? themeColor.white200 : themeColor.dark }} onPress={() => navigation.navigate('Profile')}>
           <Text>Profile</Text>
