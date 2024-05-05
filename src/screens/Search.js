@@ -3,6 +3,7 @@ import { View, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from "reac
 import { Layout, TopNav, themeColor, useTheme, Picker, Text, TextInput } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
 import { BookContext } from "../provider/BookProvider";
+import CustomTopNav from "../components/CustomTopNav";
 
 export default function SearchScreen({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -38,31 +39,7 @@ export default function SearchScreen({ navigation }) {
 
   return (
     <Layout>
-      <TopNav
-        middleContent="Search Books"
-        leftContent={
-          <Ionicons
-            name="chevron-back"
-            size={20}
-            color={isDarkmode ? themeColor.white100 : themeColor.dark}
-          />
-        }
-        leftAction={() => navigation.goBack()}
-        rightContent={
-          <Ionicons
-            name={isDarkmode ? "sunny" : "moon"}
-            size={20}
-            color={isDarkmode ? themeColor.white100 : themeColor.dark}
-          />
-        }
-        rightAction={() => {
-          if (isDarkmode) {
-            setTheme("light");
-          } else {
-            setTheme("dark");
-          }
-        }}
-      />
+      <CustomTopNav title="Search" navigation={navigation} />
       <View style={{ margin: 20 }}>
         <Picker
           items={searchFields}

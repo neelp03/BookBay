@@ -1,12 +1,24 @@
 import React, { useContext, useState, useCallback } from "react";
-import { View, FlatList, Image, TouchableOpacity, StyleSheet, RefreshControl } from "react-native";
-import { Layout, Text, TopNav, useTheme, themeColor } from "react-native-rapi-ui";
-import { Ionicons } from "@expo/vector-icons";
+import {
+  View,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  RefreshControl,
+} from "react-native";
+import {
+  Layout,
+  Text,
+  useTheme,
+  themeColor,
+} from "react-native-rapi-ui";
 import { BookContext } from "../provider/BookProvider";
+import CustomTopNav from "../components/CustomTopNav";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
-  const { books, loading, refreshBooks } = useContext(BookContext);
+  const { books, refreshBooks } = useContext(BookContext);
   const [refreshing, setRefreshing] = useState(false);
 
   const openBookDetails = (book) => {
@@ -15,9 +27,7 @@ export default function ({ navigation }) {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    refreshBooks().then(() => {
-      setRefreshing(false);
-    }).catch((error) => {
+    refreshBooks().then(() => setRefreshing(false)).catch((error) => {
       console.error(error);
       setRefreshing(false);
     });
@@ -25,56 +35,28 @@ export default function ({ navigation }) {
 
   return (
     <Layout>
-      <TopNav
-        middleContent="Home"
-        rightContent={
-          <Ionicons
-            name={isDarkmode ? "sunny" : "moon"}
-            size={20}
-            color={isDarkmode ? themeColor.white100 : themeColor.dark}
-          />
-        }
-        rightAction={() => setTheme(isDarkmode ? "light" : "dark")}
-      />
+      <CustomTopNav title="Home" navigation={navigation} />
       <View style={{ flex: 1 }}>
         <FlatList
           data={books}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[
-                styles.bookItem, 
-                {backgroundColor: isDarkmode ? themeColor.dark200 : themeColor.white}
+                styles.bookItem,
+                { backgroundColor: isDarkmode ? themeColor.dark200 : themeColor.white }
               ]}
               onPress={() => openBookDetails(item)}
             >
               <Image source={{ uri: item.coverUrl }} style={styles.bookImage} />
-              <Text style={{
-                ...styles.bookTitle, 
-                color: isDarkmode ? themeColor.white100 : themeColor.black
-              }}>{item.title}</Text>
-              <Text style={{
-                ...styles.bookInfo, 
-                color: isDarkmode ? themeColor.grey600 : themeColor.grey900
-              }}>{item.author}</Text>
-              <Text style={{
-                ...styles.bookInfo, 
-                color: isDarkmode ? themeColor.grey600 : themeColor.grey900
-              }}>ISBN: {item.isbn}</Text>
-              <Text style={{
-                ...styles.bookPrice, 
-                color: isDarkmode ? themeColor.white100 : themeColor.black
-              }}>${item.price}</Text>
+              <Text style={styles.bookTitle}>{item.title}</Text>
+              <Text style={styles.bookInfo}>{item.author}</Text>
+              <Text style={styles.bookInfo}>ISBN: {item.isbn}</Text>
+              <Text style={styles.bookPrice}>${item.price}</Text>
             </TouchableOpacity>
           )}
           numColumns={2}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={isDarkmode ? themeColor.white100 : themeColor.dark}
-            />
-          }
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={isDarkmode ? themeColor.white100 : themeColor.dark} />}
         />
       </View>
     </Layout>
