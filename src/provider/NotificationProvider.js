@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../../firebase.config'; 
+import { getAuth } from 'firebase/auth';
 import { collection, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
 
 const NotificationContext = createContext();
@@ -24,7 +25,18 @@ export const NotificationProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "notifications"), where("read", "==", false));
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if(!currentUser) {
+      return;
+    }
+    const q = query(
+      collection(db, "notifications"),
+      where("read", "==", false),
+      where("userId", "==", currentUser.uid)
+    );
+    
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const notifs = [];
       querySnapshot.forEach((doc) => {

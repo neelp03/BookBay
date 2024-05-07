@@ -56,22 +56,6 @@ const BookProvider = ({ children }) => {
   };
 
   /**
-   * Update book status
-   * @param {string} bookId - Book ID
-   * @param {string} status - Book status
-   * @returns {Promise<void>} - Promise object
-   * @async - Asynchronous function
-  */
-  const updateBookStatus = async (bookId, status) => {
-    const bookRef = doc(db, "books", bookId);
-    await updateDoc(bookRef, { status });
-
-    if (status === 'available') {
-      notifyInterestedUsers(bookId);
-    }
-  };
-
-  /**
    * Add interest for a book
    * @param {string} isbn - ISBN of the book
    * @param {string} userId - User ID
@@ -95,17 +79,23 @@ const BookProvider = ({ children }) => {
   };
 
   /**
-   * Notify interested users about book availability
+   * Notify interested users about a book
    * @param {string} bookId - Book ID
    * @returns {Promise<void>} - Promise object
    * @async - Asynchronous function
-  */
+   */
   const notifyInterestedUsers = async (bookId) => {
     const bookRef = doc(db, "books", bookId);
     const bookSnap = await getDoc(bookRef);
+    if (!bookSnap.exists() || bookSnap.data().status !== "available") {
+      console.log("No need to notify or book does not exist.");
+      return;
+    }
+
     const bookData = bookSnap.data();
     const interestsRef = query(collection(db, "book_interests"), where("isbn", "==", bookData.isbn));
     const interestsSnap = await getDocs(interestsRef);
+
     interestsSnap.forEach(async (doc) => {
       const notificationRef = collection(db, "notifications");
       await addDoc(notificationRef, {
@@ -113,12 +103,13 @@ const BookProvider = ({ children }) => {
         title: 'Book Now Available',
         message: `The book "${bookData.title}" you were interested in is now available.`,
         read: false,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
         type: 'book_availability',
         bookId: bookId
       });
     });
   };
+
 
   const refreshBooks = useCallback(() => {
     fetchBooks();
@@ -134,9 +125,20 @@ const BookProvider = ({ children }) => {
    * @returns {Promise<void>} - Promise object
   */
   const addBook = async (book) => {
-    await addDoc(collection(db, "books"), book);
-    refreshBooks();
+    try {
+      const newDocRef = await addDoc(collection(db, "books"), book);
+      if (book.status === "available") {
+        await notifyInterestedUsers(newDocRef.id)
+        .catch((error) => {
+          console.error("Error notifying interested users: ", error);
+        });
+      }
+      console.log("Book added with ID:", newDocRef.id);
+    } catch (error) {
+      console.error("Error adding book:", error);
+    }
   };
+
 
   /**
    * Remove a book from Firestore
@@ -155,8 +157,8 @@ const BookProvider = ({ children }) => {
     searchBooks,
     addBook,
     removeBook,
-    updateBookStatus,
-    addInterest
+    addInterest,
+    notifyInterestedUsers
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;

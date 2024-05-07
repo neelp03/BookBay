@@ -19,7 +19,7 @@ export default function ({ navigation }) {
     author: "",
     isbn: "",
     condition: "",
-    status: "",
+    status: "available",
     course: "",
     price: "",
     description: ""
@@ -94,18 +94,18 @@ export default function ({ navigation }) {
           }}
         >
           <View style={styles.centeredView}>
-            <View style={{...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,}}>
-              <Image 
-              source={{ uri: coverUrl }} 
-              style={{
-                width: 200,
-                height: 300,
-                resizeMode: 'contain',
-                marginBottom: 20,
-                borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
-                borderWidth: 1,
-                borderRadius: 8,
-              }}
+            <View style={{ ...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white, }}>
+              <Image
+                source={{ uri: coverUrl }}
+                style={{
+                  width: 200,
+                  height: 300,
+                  resizeMode: 'contain',
+                  marginBottom: 20,
+                  borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                }}
               />
               <Button
                 text="Submit"

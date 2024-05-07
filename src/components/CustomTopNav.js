@@ -33,8 +33,8 @@ const CustomTopNav = ({ title, navigation }) => {
       // Call the function from BookContext to register interest
       await addInterest(isbnInput.trim(), userInfo.uid);
       console.log("Notification request saved for ISBN:", isbnInput);
-      setIsbnInput(''); // Clear input after submission
-      setNotifyModalVisible(false); // Close modal after submission
+      setIsbnInput(''); 
+      setNotifyModalVisible(false);
     }
   };
 
@@ -114,7 +114,6 @@ const CustomTopNav = ({ title, navigation }) => {
           </View>
         </View>
       </Modal>
-      {/* Notify Modal */}
       {/* Notify Modal */}
       <Modal
         animationType="slide"
