@@ -13,7 +13,7 @@ import { useUser } from "../provider/UserProvider";
 
 const CustomTopNav = ({ title, navigation }) => {
   const { isDarkmode, setTheme } = useTheme();
-  const { books, removeBook } = useContext(BookContext);
+  const { books, removeBook, addInterest } = useContext(BookContext);
   const { userInfo } = useUser();
   const [menuVisible, setMenuVisible] = useState(false);
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
@@ -26,6 +26,16 @@ const CustomTopNav = ({ title, navigation }) => {
 
   const openNotifications = () => {
     navigation.navigate('Notifications');
+  };
+
+  const handleNotifySubmit = async () => {
+    if (isbnInput.trim() && userInfo) {
+      // Call the function from BookContext to register interest
+      await addInterest(isbnInput.trim(), userInfo.uid);
+      console.log("Notification request saved for ISBN:", isbnInput);
+      setIsbnInput(''); // Clear input after submission
+      setNotifyModalVisible(false); // Close modal after submission
+    }
   };
 
   return (
@@ -105,6 +115,7 @@ const CustomTopNav = ({ title, navigation }) => {
         </View>
       </Modal>
       {/* Notify Modal */}
+      {/* Notify Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -122,10 +133,7 @@ const CustomTopNav = ({ title, navigation }) => {
             <View style={styles.buttonContainer}>
               <Button
                 text="Submit"
-                onPress={() => {
-                  console.log("Request notification for ISBN:", isbnInput);
-                  setNotifyModalVisible(false);
-                }}
+                onPress={handleNotifySubmit}
                 style={{ ...styles.modalButton, marginRight: 10 }}
               />
               <Button

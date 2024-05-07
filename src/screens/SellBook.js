@@ -2,13 +2,11 @@ import React, { useState, useContext } from "react";
 import { View, StyleSheet, Image, Alert, Modal } from "react-native";
 import {
   Layout,
-  TopNav,
   TextInput,
   useTheme,
   themeColor,
   Button,
 } from "react-native-rapi-ui";
-import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../provider/UserProvider";
 import { BookContext } from "../provider/BookProvider";
 import CustomTopNav from "../components/CustomTopNav";
@@ -21,7 +19,7 @@ export default function ({ navigation }) {
     author: "",
     isbn: "",
     condition: "",
-    availability: "",
+    status: "",
     course: "",
     price: "",
     description: ""
