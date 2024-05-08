@@ -1,3 +1,4 @@
+import 'react-native-reanimated';
 import React, { useEffect, useState } from 'react';
 import { Text, View, ActivityIndicator } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
