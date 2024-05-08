@@ -66,6 +66,13 @@ export default function ({ navigation }) {
           backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
         }}
       >
+        {/* a button to take to a screen that shows previously posted books */}
+        <Button
+          text="View My Books"
+          onPress={() => navigation.navigate('MyBooks')}
+          style={{ marginBottom: 20 }}
+          color={themeColor.warning}
+        />
         {Object.keys(bookDetails).map((key) => ((
           <TextInput
             key={key}

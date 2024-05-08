@@ -20,6 +20,7 @@ import ProfileScreen from "../screens/Profile";
 import SellScreen from "../screens/SellBook";
 import SettingsScreen from "../screens/Settings";
 import BookDetails from "../screens/BookDetails";
+import Notifications from "../screens/Notifications";
 
 import Loading from "../screens/utils/Loading";
 
@@ -86,6 +87,7 @@ const MainStackScreen = () => {
     <MainStack.Navigator screenOptions={{ headerShown: false }}>
       <MainStack.Screen name="Tabs" component={TabNavigator} />
       <MainStack.Screen name="BookDetails" component={BookDetails} />
+      <MainStack.Screen name="Notifications" component={Notifications} />
     </MainStack.Navigator>
   );
 };

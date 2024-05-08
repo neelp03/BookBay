@@ -1,24 +1,46 @@
-import React, { useContext } from 'react';
-import { FlatList, View } from 'react-native';
-import { Layout } from 'react-native-rapi-ui';
+import React from 'react';
+import { FlatList } from 'react-native';
+import { Layout, Text } from 'react-native-rapi-ui';
+import { Ionicons } from '@expo/vector-icons';
 import CustomTopNav from '../components/CustomTopNav';
 import NotificationItem from '../components/NotificationItem';
-import { NotificationContext } from '../provider/NotificationProvider';
+import { useNotifications } from '../provider/NotificationProvider';
 
-export default function NotificationsScreen({ navigation }) {
-  const { notifications } = useContext(NotificationContext);
+export default function Notifications({ navigation }) {
+  const { notifications, markAsRead } = useNotifications();
+
+  const getIcon = (type) => {
+    switch (type) {
+      case 'chat':
+        return <Ionicons name="chatbubble-ellipses-outline" size={30} />;
+      case 'book_availability':
+        return <Ionicons name="book-outline" size={30} />;
+      case 'developer':
+        return <Ionicons name="code-slash-outline" size={30} />;
+      default:
+        return <Ionicons name="notifications-outline" size={30} />;
+    }
+  };
+
+  const handlePress = (item) => {
+    if (item.type === 'book_availability' && item.bookId) {
+      navigation.navigate('BookDetails', { bookId: item.bookId });
+    }
+    markAsRead(item.id);
+  };
 
   return (
     <Layout>
       <CustomTopNav title="Notifications" navigation={navigation} />
       <FlatList
         data={notifications}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <NotificationItem
-            icon={item.icon} // Make sure to provide the correct icon path
+            icon={getIcon(item.type)}
             title={item.title}
-            subtitle={item.subtitle} // Adjust according to your data structure
+            subtitle={item.message}
+            onPress={() => handlePress(item)}
           />
         )}
       />

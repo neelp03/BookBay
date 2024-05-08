@@ -22,7 +22,7 @@ export default function ({ navigation, route }) {
   return (
     <Layout>
       <TopNav
-        middleContent={Book.title}
+        middleContent={Book.title || "Book Details"}
         leftContent={
           <Ionicons
             name="chevron-back"

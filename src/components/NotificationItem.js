@@ -1,22 +1,23 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import { themeColor, useTheme } from 'react-native-rapi-ui';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { themeColor, Text } from 'react-native-rapi-ui';
 
-const NotificationItem = ({ icon, title, subtitle }) => {
-  const { isDarkmode } = useTheme();
+const NotificationItem = ({ icon, title, subtitle, onPress }) => {
 
   return (
-    <View style={styles.container}>
-      <Image source={icon} style={styles.icon} />
+    <TouchableOpacity style={styles.container} onPress={onPress}>
+      <View style={{...styles.iconContainer, backgroundColor: themeColor.primary400}}>
+        {icon}
+      </View>
       <View style={styles.textContainer}>
-        <Text style={[styles.title, { color: isDarkmode ? themeColor.white100 : themeColor.dark }]}>
+        <Text>
           {title}
         </Text>
-        <Text style={[styles.subtitle, { color: isDarkmode ? themeColor.grey600 : themeColor.grey900 }]}>
+        <Text>
           {subtitle}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -24,25 +25,20 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     padding: 10,
-    backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     alignItems: 'center',
   },
-  icon: {
-    width: 40,
-    height: 40,
+  iconContainer: {
+    width: 50,
+    height: 50,
     marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
   },
   textContainer: {
     flex: 1,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    fontSize: 14,
   },
 });
 
