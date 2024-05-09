@@ -21,6 +21,8 @@ import SellScreen from "../screens/SellBook";
 import SettingsScreen from "../screens/Settings";
 import BookDetails from "../screens/BookDetails";
 import Notifications from "../screens/Notifications";
+import MyBooks from "../screens/MyBooks";
+import EditBook from "../screens/EditBook";
 
 import Loading from "../screens/utils/Loading";
 
@@ -88,6 +90,8 @@ const MainStackScreen = () => {
       <MainStack.Screen name="Tabs" component={TabNavigator} />
       <MainStack.Screen name="BookDetails" component={BookDetails} />
       <MainStack.Screen name="Notifications" component={Notifications} />
+      <MainStack.Screen name="MyBooks" component={MyBooks} />
+      <MainStack.Screen name="EditBook" component={EditBook} />
     </MainStack.Navigator>
   );
 };

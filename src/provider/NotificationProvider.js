@@ -19,25 +19,23 @@ export const useNotifications = () => useContext(NotificationContext);
  * @param {Object} props - Component props
  * @param {Object} props.children - Component children
  * @returns {JSX.Element} NotificationProvider component
- */
-export const NotificationProvider = ({ children }) => {
+ */export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
 
-  useEffect(() => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-
+  const fetchNotifications = () => {
     if(!currentUser) {
       return;
     }
+
     const q = query(
       collection(db, "notifications"),
-      where("read", "==", false),
       where("userId", "==", currentUser.uid)
     );
-    
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+
+    return onSnapshot(q, (querySnapshot) => {
       const notifs = [];
       querySnapshot.forEach((doc) => {
         notifs.push({ id: doc.id, ...doc.data() });
@@ -47,10 +45,19 @@ export const NotificationProvider = ({ children }) => {
     }, (error) => {
       console.error("Error fetching notifications: ", error);
       setLoading(false);
-    });    
+    });
+  };
 
-    return () => unsubscribe(); // Detach listener on unmount
+  useEffect(() => {
+    const unsubscribe = fetchNotifications();
+    return () => unsubscribe && unsubscribe(); // Detach listener on unmount
   }, []);
+
+  const refreshNotifications = () => {
+    setLoading(true);
+    const unsubscribe = fetchNotifications();
+    return () => unsubscribe && unsubscribe(); // Make sure to clean up this listener as well
+  };
 
   const markAsRead = async (notificationId) => {
     const notifDoc = doc(db, "notifications", notificationId);
@@ -58,7 +65,7 @@ export const NotificationProvider = ({ children }) => {
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, loading, markAsRead }}>
+    <NotificationContext.Provider value={{ notifications, loading, markAsRead, refreshNotifications }}>
       {children}
     </NotificationContext.Provider>
   );

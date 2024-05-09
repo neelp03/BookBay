@@ -2,10 +2,10 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { themeColor, Text } from 'react-native-rapi-ui';
 
-const NotificationItem = ({ icon, title, subtitle, onPress }) => {
+const NotificationItem = ({ icon, title, read, subtitle, onPress }) => {
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={{...styles.container, backgroundColor: read ? themeColor.white200 : themeColor.white}} onPress={onPress}>
       <View style={{...styles.iconContainer, backgroundColor: themeColor.primary400}}>
         {icon}
       </View>

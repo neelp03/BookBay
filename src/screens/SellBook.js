@@ -88,7 +88,7 @@ export default function ({ navigation }) {
           text="Fetch Cover"
           onPress={fetchCover}
           style={{ marginTop: 20 }}
-          disabled={!bookDetails.isbn}
+          disabled={!bookDetails.title || !bookDetails.isbn || bookDetails.isbn.length < 10 || bookDetails.isbn.length > 13 || isNaN(bookDetails.isbn)}
         />
 
         <Modal

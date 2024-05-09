@@ -110,28 +110,19 @@ const BookProvider = ({ children }) => {
     });
   };
 
-
-  const refreshBooks = useCallback(() => {
-    fetchBooks();
-  }, []);
-
-  useEffect(() => {
-    fetchBooks();
-  }, []);
-
   /**
-   * Add a book to Firestore
-   * @param {Object} book - Book object
-   * @returns {Promise<void>} - Promise object
-  */
+ * Add a book to Firestore
+ * @param {Object} book - Book object
+ * @returns {Promise<void>} - Promise object
+*/
   const addBook = async (book) => {
     try {
       const newDocRef = await addDoc(collection(db, "books"), book);
       if (book.status === "available") {
         await notifyInterestedUsers(newDocRef.id)
-        .catch((error) => {
-          console.error("Error notifying interested users: ", error);
-        });
+          .catch((error) => {
+            console.error("Error notifying interested users: ", error);
+          });
       }
       console.log("Book added with ID:", newDocRef.id);
     } catch (error) {
@@ -139,7 +130,23 @@ const BookProvider = ({ children }) => {
     }
   };
 
-
+  /**
+   * Update a book in Firestore
+   * @param {string} bookId - Book ID
+   * @param {Object} updatedData - Updated book data
+   * @returns {Promise<void>} - Promise object
+  */
+  const updateBook = async (bookId, updatedData) => {
+    const bookRef = doc(db, "books", bookId);
+    try {
+      await updateDoc(bookRef, updatedData);
+      console.log("Book updated:", bookId);
+      refreshBooks();
+    } catch (error) {
+      console.error("Error updating book:", error);
+    }
+  };  
+  
   /**
    * Remove a book from Firestore
    * @param {string} bookId - Book ID
@@ -150,15 +157,44 @@ const BookProvider = ({ children }) => {
     refreshBooks();
   };
 
+  /**
+   * Get a book by ID
+   * @param {string} bookId - Book ID
+   * @returns {Promise<Object>} - Book object`
+  */
+  const getBookById = async (bookId) => {
+  const bookRef = doc(db, "books", bookId);
+  const bookSnap = await getDoc(bookRef);
+  if (bookSnap.exists()) {
+    return {
+      id: bookSnap.id,
+      ...bookSnap.data()
+    };
+  } else {
+    console.log("No such book exists.");
+    return null;
+  }
+};
+
+  const refreshBooks = useCallback(() => {
+    fetchBooks();
+  }, []);
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
   const value = {
     books,
     loading,
     refreshBooks,
     searchBooks,
     addBook,
+    updateBook,
     removeBook,
     addInterest,
-    notifyInterestedUsers
+    notifyInterestedUsers,
+    getBookById,
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;

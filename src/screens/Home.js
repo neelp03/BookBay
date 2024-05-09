@@ -27,10 +27,13 @@ export default function ({ navigation }) {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    refreshBooks().then(() => setRefreshing(false)).catch((error) => {
+    try {
+      refreshBooks();
+    } catch (error) {
       console.error(error);
+    } finally {
       setRefreshing(false);
-    });
+    }
   }, [refreshBooks]);
 
   return (

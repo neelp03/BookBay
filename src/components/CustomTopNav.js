@@ -42,15 +42,23 @@ const CustomTopNav = ({ title, navigation }) => {
     <>
       <TopNav
         middleContent={title}
-        leftContent={<Ionicons name="menu" size={25} color={isDarkmode ? themeColor.white100 : themeColor.dark} onPress={() => setMenuVisible(true)} />}
+        leftContent={
+          // show the menu icon only if title is not notifications, else show back icon
+          (title !== 'My Books' && title !== 'Edit Book' && title !== 'Notifications') ? (
+            <Ionicons name="menu" size={25} color={isDarkmode ? themeColor.white100 : themeColor.dark} onPress={() => setMenuVisible(true)} />
+          ) : (
+            <Ionicons name="chevron-back" size={25} color={isDarkmode ? themeColor.white100 : themeColor.dark} onPress={() => navigation.goBack()} />
+          )
+        }
         rightContent={
+          // show the notification icon only if title is not notifications
           <View style={styles.iconContainer}>
-            <Ionicons
+          {title !== 'Notifications' && (<Ionicons
               name="notifications"
               size={25}
               color={isDarkmode ? themeColor.white100 : themeColor.dark}
               onPress={openNotifications}
-            />
+            />)}
             <Ionicons
               name={isDarkmode ? 'sunny' : 'moon'}
               size={25}
@@ -77,7 +85,7 @@ const CustomTopNav = ({ title, navigation }) => {
               setMenuVisible(false);
               setNotifyModalVisible(true);
             }} style={styles.modalButton} />
-            <Button text="Close Menu" onPress={() => setMenuVisible(false)} style={styles.modalButton} color={themeColor.danger} />
+            <Button text="Close Menu" onPress={() => setMenuVisible(false)} style={styles.modalButton} color={themeColor.warning} />
           </View>
         </View>
       </Modal>
