@@ -1,6 +1,6 @@
 import React, { useContext, useCallback } from 'react';
 import { FlatList, ScrollView, RefreshControl } from 'react-native';
-import { Layout, Text } from 'react-native-rapi-ui';
+import { Layout, Text, themeColor } from 'react-native-rapi-ui';
 import { Ionicons } from '@expo/vector-icons';
 import CustomTopNav from '../components/CustomTopNav';
 import NotificationItem from '../components/NotificationItem';
@@ -43,7 +43,6 @@ export default function Notifications({ navigation }) {
   return (
     <Layout>
       <CustomTopNav title="Notifications" navigation={navigation} />
-      {/* if no notification say  no notifications or make flatlist*/}
       {notifications.length === 0 ? (
         <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
@@ -59,6 +58,7 @@ export default function Notifications({ navigation }) {
               title={item.title}
               subtitle={item.message}
               read={item.read}
+              time={new Date(item.timestamp.toDate())}
               onPress={() => handlePress(item)}
             />
           )}
