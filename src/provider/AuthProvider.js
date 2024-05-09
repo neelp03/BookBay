@@ -11,9 +11,21 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  
+
+  function checkLogin() {
+    onAuthStateChanged(auth, (u) => {
+      if (u) {
+        setUser(true);
+        // getUserData();
+      } else {
+        setUser(false);
+        // setUserData(null);
+      }
+    });
+  }
+
   useEffect(() => {
-    onAuthStateChanged(auth, setUser);
+    checkLogin();
   }, []);
 
   const reauthenticate = async (currentPassword) => {
