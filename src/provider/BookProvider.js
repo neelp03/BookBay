@@ -1,157 +1,200 @@
-/**
- * @file BooksProvider.js
- * @description A React context provider component for managing books data.
- */
-
 import React, { createContext, useEffect, useState, useCallback } from "react";
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc, getDoc
+} from "firebase/firestore";
 import { db } from "../../firebase.config";
 
-/**
- * @typedef Book
- * @property {string} id - The unique identifier of the book.
- * @property {string} title - The title of the book.
- * @property {string} author - The author of the book.
- * @property {number} price - The price of the book.
- */
-
-/**
- * @typedef BookContextValue
- * @property {Book[]} books - The array of books.
- * @property {boolean} loading - Indicates if the books are being loaded.
- */
-
-/**
- * @type {React.Context<BookContextValue>}
- */
 const BookContext = createContext();
 
 /**
- * A React context provider component for managing books data.
- * @param {Object} props - The component props.
- * @param {React.ReactNode} props.children - The child components.
- * @returns {React.ReactNode} The rendered component.
- */
+ * Provider component for managing book data
+ * @param {Object} children - React component children
+ * @returns {JSX.Element} BookProvider component
+*/
 const BookProvider = ({ children }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   /**
-   * Fetches the books data from the database.
-   * @returns {Promise<void>} A promise that resolves when the books are fetched.
-   */
+   * Fetch all books from Firestore
+   * @returns {Promise<void>} - Promise object
+   * @async - Asynchronous function
+  */
   const fetchBooks = async () => {
-    try {
-      setLoading(true);
-      const booksCollectionRef = collection(db, "books"); // Getting a reference to the 'books' collection
-      const snapshot = await getDocs(booksCollectionRef); // Fetching documents from the collection
-      const fetchedBooks = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setBooks(fetchedBooks);
-    } catch (error) {
-      console.error("Error fetching books:", error);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    const booksCollectionRef = collection(db, "books");
+    const snapshot = await getDocs(booksCollectionRef);
+    const fetchedBooks = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setBooks(fetchedBooks);
+    setLoading(false);
   };
 
   /**
-   * Searches for books in the database based on the search query and field.
-   * @param {string} searchQuery - The search query.
-   * @param {string} field - The field to search in.
-   * @returns {Promise<void>} A promise that resolves when the books are searched.
-   */
+   * Search books by title or author
+   * @param {string} searchQuery - Search query
+   * @param {string} field - Field to search in
+   * @returns {Promise<void>} - Promise object
+   * @async - Asynchronous function
+  */
   const searchBooks = async (searchQuery, field) => {
     setLoading(true);
-    try {
-      let booksQuery;
-      if (field === "isbn") {
-        // Exact matching for ISBN
-        booksQuery = query(collection(db, "books"), where(field, "==", searchQuery));
-      } else {
-        // Partial matching for other fields
-        booksQuery = query(
-          collection(db, "books"),
-          where(field, ">=", searchQuery),
-          where(field, "<=", searchQuery + '\uf8ff')
-        );
-      }
+    const booksQuery = query(
+      collection(db, "books"),
+      where(field, ">=", searchQuery),
+      where(field, "<=", searchQuery + '\uf8ff')
+    );
+    const snapshot = await getDocs(booksQuery);
+    const searchedBooks = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setBooks(searchedBooks);
+    setLoading(false);
+  };
 
-      const snapshot = await getDocs(booksQuery);
-      let searchedBooks = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+  /**
+   * Add interest for a book
+   * @param {string} isbn - ISBN of the book
+   * @param {string} userId - User ID
+   * @returns {Promise<void>} - Promise object
+  */
+  const addInterest = async (isbn, userId) => {
+    const interestsRef = collection(db, "book_interests");
+    const existingInterestQuery = query(interestsRef, where("isbn", "==", isbn), where("userId", "==", userId));
+    const snapshot = await getDocs(existingInterestQuery);
 
-      if (field !== "isbn") {
-        // Sorting by relevance only for non-ISBN fields
-        searchedBooks.sort((a, b) => Math.abs(a[field].length - searchQuery.length) - Math.abs(b[field].length - searchQuery.length));
-      }
-
-      setBooks(searchedBooks);
-    } catch (error) {
-      console.error("Error searching books:", error);
-      setBooks([]);
-    } finally {
-      setLoading(false);
+    if (snapshot.empty) { // Only add new interest if it doesn't already exist
+      await addDoc(interestsRef, {
+        isbn,
+        userId,
+        timestamp: new Date()
+      });
+      console.log("Interest added for user:", userId, "for ISBN:", isbn);
+    } else {
+      console.log("Interest already exists for this user and ISBN.");
     }
   };
 
   /**
-   * Refreshes the books data by fetching it from the database.
-   * @returns {Promise<void>} A promise that resolves when the books are refreshed.
+   * Notify interested users about a book
+   * @param {string} bookId - Book ID
+   * @returns {Promise<void>} - Promise object
+   * @async - Asynchronous function
    */
-  const refreshBooks = useCallback(() => {
-    return fetchBooks();
-  });
+  const notifyInterestedUsers = async (bookId) => {
+    const bookRef = doc(db, "books", bookId);
+    const bookSnap = await getDoc(bookRef);
+    if (!bookSnap.exists() || bookSnap.data().status !== "available") {
+      console.log("No need to notify or book does not exist.");
+      return;
+    }
 
-  useEffect(() => {
-    fetchBooks();
-  }, []);
+    const bookData = bookSnap.data();
+    const interestsRef = query(collection(db, "book_interests"), where("isbn", "==", bookData.isbn));
+    const interestsSnap = await getDocs(interestsRef);
+
+    interestsSnap.forEach(async (doc) => {
+      const notificationRef = collection(db, "notifications");
+      await addDoc(notificationRef, {
+        userId: doc.data().userId,
+        title: 'Book Now Available',
+        message: `The book "${bookData.title}" you were interested in is now available.`,
+        read: false,
+        timestamp: new Date(),
+        type: 'book_availability',
+        bookId: bookId
+      });
+    });
+  };
 
   /**
-   * Adds a new book to the database.
-   * @param {Book} book - The book to add.
-   * @returns {Promise<void>}
-   */
+ * Add a book to Firestore
+ * @param {Object} book - Book object
+ * @returns {Promise<void>} - Promise object
+*/
   const addBook = async (book) => {
     try {
-      const booksCollectionRef = collection(db, "books");
-      await addDoc(booksCollectionRef, book);
-      await fetchBooks();
+      const newDocRef = await addDoc(collection(db, "books"), book);
+      if (book.status === "available") {
+        await notifyInterestedUsers(newDocRef.id)
+          .catch((error) => {
+            console.error("Error notifying interested users: ", error);
+          });
+      }
+      console.log("Book added with ID:", newDocRef.id);
     } catch (error) {
       console.error("Error adding book:", error);
     }
   };
 
   /**
-   * Removes a book from the database.
-   * @param {string} bookId - The ID of the book to remove.
-   * @returns {Promise<void>}
-   */
-  const removeBook = async (bookId) => {
+   * Update a book in Firestore
+   * @param {string} bookId - Book ID
+   * @param {Object} updatedData - Updated book data
+   * @returns {Promise<void>} - Promise object
+  */
+  const updateBook = async (bookId, updatedData) => {
+    const bookRef = doc(db, "books", bookId);
     try {
-      const bookRef = doc(db, "books", bookId);
-      await deleteDoc(bookRef);
-      await fetchBooks();
+      await updateDoc(bookRef, updatedData);
+      console.log("Book updated:", bookId);
+      refreshBooks();
     } catch (error) {
-      console.error("Error removing book:", error);
+      console.error("Error updating book:", error);
     }
+  };  
+  
+  /**
+   * Remove a book from Firestore
+   * @param {string} bookId - Book ID
+   * @returns {Promise<void>}
+  */
+  const removeBook = async (bookId) => {
+    await deleteDoc(doc(db, "books", bookId));
+    refreshBooks();
   };
 
   /**
-   * The value provided by the BooksProvider context.
-   * @type {BookContextValue}
-   */
+   * Get a book by ID
+   * @param {string} bookId - Book ID
+   * @returns {Promise<Object>} - Book object`
+  */
+  const getBookById = async (bookId) => {
+  const bookRef = doc(db, "books", bookId);
+  const bookSnap = await getDoc(bookRef);
+  if (bookSnap.exists()) {
+    return {
+      id: bookSnap.id,
+      ...bookSnap.data()
+    };
+  } else {
+    console.log("No such book exists.");
+    return null;
+  }
+};
+
+  const refreshBooks = useCallback(() => {
+    fetchBooks();
+  }, []);
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
   const value = {
     books,
     loading,
     refreshBooks,
     searchBooks,
     addBook,
+    updateBook,
     removeBook,
+    addInterest,
+    notifyInterestedUsers,
+    getBookById,
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;

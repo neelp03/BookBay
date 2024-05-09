@@ -1,7 +1,6 @@
 import React, { useState, useContext } from "react";
 import { View, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
-import { Layout, TopNav, themeColor, useTheme, Picker, Text, TextInput } from "react-native-rapi-ui";
-import { Ionicons } from "@expo/vector-icons";
+import { Layout, themeColor, useTheme, Picker, Text, TextInput } from "react-native-rapi-ui";
 import { BookContext } from "../provider/BookProvider";
 import CustomTopNav from "../components/CustomTopNav";
 

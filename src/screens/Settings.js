@@ -2,7 +2,6 @@ import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import {
   Layout,
-  TopNav,
   Text,
   themeColor,
   useTheme,

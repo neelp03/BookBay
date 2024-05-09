@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { View, FlatList, Text, TouchableOpacity } from 'react-native';
+import React, { useContext } from 'react';
+import { FlatList, Text, TouchableOpacity } from 'react-native';
 import { MessageContext } from '../provider/MessageProvider'; // You'll create this
 
 export default function Message({ navigation }) {

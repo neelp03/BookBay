@@ -2,13 +2,11 @@ import React, { useState, useContext } from "react";
 import { View, StyleSheet, Image, Alert, Modal } from "react-native";
 import {
   Layout,
-  TopNav,
   TextInput,
   useTheme,
   themeColor,
   Button,
 } from "react-native-rapi-ui";
-import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../provider/UserProvider";
 import { BookContext } from "../provider/BookProvider";
 import CustomTopNav from "../components/CustomTopNav";
@@ -21,7 +19,7 @@ export default function ({ navigation }) {
     author: "",
     isbn: "",
     condition: "",
-    availability: "",
+    status: "available",
     course: "",
     price: "",
     description: ""
@@ -68,6 +66,13 @@ export default function ({ navigation }) {
           backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
         }}
       >
+        {/* a button to take to a screen that shows previously posted books */}
+        <Button
+          text="View My Books"
+          onPress={() => navigation.navigate('MyBooks')}
+          style={{ marginBottom: 20 }}
+          color={themeColor.warning}
+        />
         {Object.keys(bookDetails).map((key) => ((
           <TextInput
             key={key}
@@ -83,7 +88,7 @@ export default function ({ navigation }) {
           text="Fetch Cover"
           onPress={fetchCover}
           style={{ marginTop: 20 }}
-          disabled={!bookDetails.isbn}
+          disabled={!bookDetails.title || !bookDetails.isbn || bookDetails.isbn.length < 10 || bookDetails.isbn.length > 13 || isNaN(bookDetails.isbn)}
         />
 
         <Modal
@@ -96,18 +101,18 @@ export default function ({ navigation }) {
           }}
         >
           <View style={styles.centeredView}>
-            <View style={{...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,}}>
-              <Image 
-              source={{ uri: coverUrl }} 
-              style={{
-                width: 200,
-                height: 300,
-                resizeMode: 'contain',
-                marginBottom: 20,
-                borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
-                borderWidth: 1,
-                borderRadius: 8,
-              }}
+            <View style={{ ...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white, }}>
+              <Image
+                source={{ uri: coverUrl }}
+                style={{
+                  width: 200,
+                  height: 300,
+                  resizeMode: 'contain',
+                  marginBottom: 20,
+                  borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                }}
               />
               <Button
                 text="Submit"

@@ -1,11 +1,13 @@
+import 'react-native-reanimated';
 import React, { useEffect, useState } from 'react';
-import { Text, View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts, Ubuntu_400Regular, Ubuntu_700Bold } from '@expo-google-fonts/ubuntu';
 import AppNavigator from "./src/navigation/AppNavigator";
 import { AuthProvider } from "./src/provider/AuthProvider";
 import { BookProvider } from "./src/provider/BookProvider";
 import { UserProvider } from "./src/provider/UserProvider";
+import { NotificationProvider } from "./src/provider/NotificationProvider";
 import { ThemeProvider } from "react-native-rapi-ui";
 
 SplashScreen.preventAutoHideAsync();  // Prevent auto-hiding the splash screen
@@ -67,7 +69,9 @@ export default function App() {
       <AuthProvider>
         <BookProvider>
           <UserProvider>
-            <AppNavigator />
+            <NotificationProvider>
+              <AppNavigator />
+            </NotificationProvider>
           </UserProvider>
         </BookProvider>
       </AuthProvider>
