@@ -8,7 +8,7 @@ import { useNotifications } from '../provider/NotificationProvider';
 import { BookContext } from '../provider/BookProvider';
 
 export default function Notifications({ navigation }) {
-  const { notifications, markAsRead, loading, refreshNotifications  } = useNotifications();
+  const { notifications, markAsRead, loading, refreshNotifications } = useNotifications();
   const { getBookById } = useContext(BookContext);
 
   const onRefresh = useCallback(() => {
@@ -45,7 +45,7 @@ export default function Notifications({ navigation }) {
       <CustomTopNav title="Notifications" navigation={navigation} />
       {/* if no notification say  no notifications or make flatlist*/}
       {notifications.length === 0 ? (
-        <ScrollView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
           <Text>No notifications</Text>
         </ScrollView>

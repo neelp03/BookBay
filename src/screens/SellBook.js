@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, StyleSheet, Image, Alert, Modal } from "react-native";
+import { View, StyleSheet, Image, Alert, Modal, KeyboardAvoidingView, ScrollView } from "react-native";
 import {
   Layout,
   TextInput,
@@ -41,7 +41,7 @@ export default function ({ navigation }) {
   const handleSubmit = async () => {
     const docData = {
       ...bookDetails,
-      seller: userInfo.uid, // Assuming the useUser hook provides the user's UID
+      seller: userInfo.uid,
       coverUrl: coverUrl
     };
 
@@ -57,82 +57,89 @@ export default function ({ navigation }) {
   };
 
   return (
-    <Layout>
+    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
+      <Layout>
       <CustomTopNav title="Sell Book" navigation={navigation} />
-      <View
-        style={{
-          flex: 3,
-          padding: 20,
-          backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
-        }}
-      >
-        {/* a button to take to a screen that shows previously posted books */}
-        <Button
-          text="View My Books"
-          onPress={() => navigation.navigate('MyBooks')}
-          style={{ marginBottom: 20 }}
-          color={themeColor.warning}
-        />
-        {Object.keys(bookDetails).map((key) => ((
-          <TextInput
-            key={key}
-            containerStyle={{ marginTop: 15 }}
-            value={bookDetails[key]}
-            onChangeText={(value) => handleChange(key, value)}
-            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-          />
-        )
-        ))}
-
-        <Button
-          text="Fetch Cover"
-          onPress={fetchCover}
-          style={{ marginTop: 20 }}
-          disabled={!bookDetails.title || !bookDetails.isbn || bookDetails.isbn.length < 10 || bookDetails.isbn.length > 13 || isNaN(bookDetails.isbn)}
-        />
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
           }}
         >
-          <View style={styles.centeredView}>
-            <View style={{ ...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white, }}>
-              <Image
-                source={{ uri: coverUrl }}
-                style={{
-                  width: 200,
-                  height: 300,
-                  resizeMode: 'contain',
-                  marginBottom: 20,
-                  borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                }}
+          <View
+            style={{
+              flex: 3,
+              padding: 20,
+              backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+            }}
+          >
+            <Button
+              text="View My Books"
+              onPress={() => navigation.navigate('MyBooks')}
+              style={{ marginBottom: 20 }}
+              color={themeColor.warning}
+            />
+            {Object.keys(bookDetails).map((key) => ((
+              <TextInput
+                key={key}
+                containerStyle={{ marginTop: 15 }}
+                value={bookDetails[key]}
+                onChangeText={(value) => handleChange(key, value)}
+                placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
               />
-              <Button
-                text="Submit"
-                onPress={handleSubmit}
-                style={{
-                  marginTop: 20,
-                }}
-              />
-              <Button
-                text="Cancel"
-                onPress={() => setModalVisible(false)}
-                style={{
-                  marginTop: 20,
-                }}
-              />
-            </View>
+            )
+            ))}
+
+            <Button
+              text="Fetch Cover"
+              onPress={fetchCover}
+              style={{ marginTop: 20 }}
+              disabled={!bookDetails.title || !bookDetails.isbn || bookDetails.isbn.length < 10 || bookDetails.isbn.length > 13 || isNaN(bookDetails.isbn)}
+            />
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <View style={styles.centeredView}>
+                <View style={{ ...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white, }}>
+                  <Image
+                    source={{ uri: coverUrl }}
+                    style={{
+                      width: 200,
+                      height: 300,
+                      resizeMode: 'contain',
+                      marginBottom: 20,
+                      borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
+                      borderWidth: 1,
+                      borderRadius: 8,
+                    }}
+                  />
+                  <Button
+                    text="Submit"
+                    onPress={handleSubmit}
+                    style={{
+                      marginTop: 20,
+                    }}
+                  />
+                  <Button
+                    text="Cancel"
+                    onPress={() => setModalVisible(false)}
+                    style={{
+                      marginTop: 20,
+                    }}
+                  />
+                </View>
+              </View>
+            </Modal>
           </View>
-        </Modal>
-      </View>
-    </Layout>
+        </ScrollView>
+      </Layout>
+    </KeyboardAvoidingView>
   );
 }
 
