@@ -25,6 +25,7 @@ import MyBooks from "../screens/MyBooks";
 import EditBook from "../screens/EditBook";
 
 import Loading from "../screens/utils/Loading";
+import ChangePassword from "../screens/changePassword";
 
 const AuthStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
@@ -101,6 +102,7 @@ const SettingsStackScreen = () => {
     <SettingsStack.Navigator>
       <SettingsStack.Screen name="SettingsHome" component={SettingsScreen} options={{ headerShown: false }} />
       <SettingsStack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <SettingsStack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
     </SettingsStack.Navigator>
   );
 };

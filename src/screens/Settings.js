@@ -17,10 +17,8 @@ export default function ({ navigation }) {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      // Handle successful sign out (e.g., navigate to login screen)
       navigation.navigate("Login");
     } catch (error) {
-      // Handle error if sign out fails
       console.error("Sign out error", error);
     }
   };
@@ -34,6 +32,10 @@ export default function ({ navigation }) {
           <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />
         </TouchableOpacity>
 
+        <TouchableOpacity style={{ ...styles.option, borderBottomColor: isDarkmode ? themeColor.white200 : themeColor.dark }} onPress={() => navigation.navigate('ChangePassword')}>
+          <Text>Change Password</Text>
+          <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />
+        </TouchableOpacity>
         <TouchableOpacity style={{ ...styles.option, borderBottomColor: isDarkmode ? themeColor.white200 : themeColor.dark }} onPress={handleSignOut}>
           <Text style={{ color: themeColor.danger }}>Sign Out</Text>
           <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />

@@ -4,37 +4,46 @@
  */
 
 import React, { createContext, useState, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "firebase/auth";
 import { auth } from "../../firebase.config";
 
 const AuthContext = createContext();
-const AuthProvider = (props) => {
-  // user null = loading
-  const [user, setUser] = useState(null);
 
+const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  
   useEffect(() => {
-    checkLogin();
+    onAuthStateChanged(auth, setUser);
   }, []);
 
-  function checkLogin() {
-    onAuthStateChanged(auth, (u) => {
-      if (u) {
-        setUser(true);
-        // getUserData();
-      } else {
-        setUser(false);
-        // setUserData(null);
-      }
-    });
-  }
+  const reauthenticate = async (currentPassword) => {
+    const currentUser = getAuth().currentUser;
+    const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+    try {
+      await reauthenticateWithCredential(currentUser, credential);
+      return { success: true };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  const changePassword = async (newPassword) => {
+    const currentUser = getAuth().currentUser;
+    try {
+      await updatePassword(currentUser, newPassword);
+      return { success: true };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  const signOut = async () => {
+    await auth.signOut();
+  };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-      }}
-    >
-      {props.children}
+    <AuthContext.Provider value={{ user, reauthenticate, changePassword, signOut }}>
+      {children}
     </AuthContext.Provider>
   );
 };
