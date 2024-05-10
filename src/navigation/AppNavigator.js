@@ -25,7 +25,7 @@ import MyBooks from "../screens/MyBooks";
 import EditBook from "../screens/EditBook";
 
 import Loading from "../screens/utils/Loading";
-import ChangePassword from "../screens/changePassword";
+import ChangePassword from "../screens/ChangePassword";
 
 const AuthStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();

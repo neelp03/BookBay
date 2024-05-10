@@ -36,6 +36,10 @@ export default function ({ navigation }) {
           <Text>Change Password</Text>
           <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />
         </TouchableOpacity>
+        <TouchableOpacity style={{ ...styles.option, borderBottomColor: isDarkmode ? themeColor.white200 : themeColor.dark }} onPress={() => navigation.navigate('DeleteAccount')}>
+          <Text>Delete Account</Text>
+          <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />
+        </TouchableOpacity>
         <TouchableOpacity style={{ ...styles.option, borderBottomColor: isDarkmode ? themeColor.white200 : themeColor.dark }} onPress={handleSignOut}>
           <Text style={{ color: themeColor.danger }}>Sign Out</Text>
           <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />

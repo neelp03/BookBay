@@ -53,8 +53,22 @@ const AuthProvider = ({ children }) => {
     await auth.signOut();
   };
 
+  /**
+   * Delete the current user's account
+   * @returns {Promise<{success: boolean, message?: string}>} A promise that resolves to an object with a success boolean and an optional message string
+  */
+  const deleteAccount = async () => {
+    const currentUser = getAuth().currentUser;
+    try {
+      await currentUser.delete();
+      return { success: true };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, reauthenticate, changePassword, signOut }}>
+    <AuthContext.Provider value={{ user, reauthenticate, changePassword, signOut, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

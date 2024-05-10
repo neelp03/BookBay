@@ -1,1 +1,9 @@
-{}
+{
+  "ignore_dirs": ["node_modules"],
+  "ignore_files": ["*.log"],
+  "watch": ["src"],
+  "trigger": {
+    "command": ["npm", "run", "build"],
+    "expression": ["allof", ["match", "*.js"], ["not", ["match", "src/**/*.test.js"]]]
+  }
+}
