@@ -38,6 +38,8 @@ export default function Profile({ navigation }) {
   return (
     <Layout>
       <TopNav
+        backgroundColor="transparent"
+        borderColor="transparent"
         middleContent="Profile"
         leftContent={<Ionicons name="chevron-back" size={20} color={isDarkmode ? themeColor.white100 : themeColor.dark} />}
         leftAction={() => navigation.goBack()}

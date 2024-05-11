@@ -26,6 +26,7 @@ import EditBook from "../screens/EditBook";
 
 import Loading from "../screens/utils/Loading";
 import ChangePassword from "../screens/ChangePassword";
+import DeleteAccount from "../screens/DeleteAccount";
 
 const AuthStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
@@ -103,6 +104,7 @@ const SettingsStackScreen = () => {
       <SettingsStack.Screen name="SettingsHome" component={SettingsScreen} options={{ headerShown: false }} />
       <SettingsStack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       <SettingsStack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
+      <SettingsStack.Screen name="DeleteAccount" component={DeleteAccount} options={{ headerShown: false }} />
     </SettingsStack.Navigator>
   );
 };

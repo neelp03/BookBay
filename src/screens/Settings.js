@@ -26,7 +26,7 @@ export default function ({ navigation }) {
   return (
     <Layout>
       <CustomTopNav title="Settings" navigation={navigation} />
-      <View style={styles.container}>
+      <View style={{...styles.container, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white}}>
         <TouchableOpacity style={{ ...styles.option, borderBottomColor: isDarkmode ? themeColor.white200 : themeColor.dark }} onPress={() => navigation.navigate('Profile')}>
           <Text>Profile</Text>
           <Ionicons name="chevron-forward" size={20} color={isDarkmode ? themeColor.white200 : themeColor.dark} />

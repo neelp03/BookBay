@@ -41,6 +41,8 @@ const CustomTopNav = ({ title, navigation }) => {
   return (
     <>
       <TopNav
+        backgroundColor='transparent'
+        borderColor='transparent'
         middleContent={title}
         leftContent={
           // show the menu icon only if title is not notifications, else show back icon

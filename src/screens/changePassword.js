@@ -35,6 +35,8 @@ export default function ChangePassword({ navigation }) {
   return (
     <Layout>
       <TopNav
+        backgroundColor='transparent'
+        borderColor='transparent'
         middleContent="Change Password"
         leftContent={<Ionicons name="chevron-back" size={20} color={isDarkmode ? themeColor.white100 : themeColor.dark} />}
         leftAction={() => navigation.goBack()}
