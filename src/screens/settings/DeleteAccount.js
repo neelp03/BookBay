@@ -3,6 +3,8 @@ import { ScrollView, View, StyleSheet, Alert, Image, KeyboardAvoidingView } from
 import { useTheme, themeColor, Text, TextInput, Button, Layout, TopNav } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
 import { AuthContext } from "../../provider/AuthProvider";
+import { removeAllUserData } from "../../provider/DeleteAccountProvider";
+import { auth } from "../../../firebase.config";
 
 export default function DeleteAccount({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -12,14 +14,23 @@ export default function DeleteAccount({ navigation }) {
   const handleDeleteAccount = async () => {
     const reauthResult = await reauthenticate(password);
     if (!reauthResult.success) {
+      removeAllUserData(auth.currentUser.uid)
       Alert.alert("Error", "Password is incorrect");
       return;
     }
-
+    const handleSignOut = async () => {
+      try {
+        await signOut(auth);
+        navigation.navigate("Login");
+      } catch (error) {
+        console.error("Sign out error", error);
+      }
+    };
+  
     const deleteResult = await deleteAccount();
     if (deleteResult.success) {
       Alert.alert("Success", "Account deleted successfully.");
-      signOut();
+      handleSignOut();
     } else {
       Alert.alert("Error", deleteResult.message);
     }
