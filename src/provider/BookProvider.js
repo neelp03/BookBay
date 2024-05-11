@@ -13,6 +13,7 @@ const BookContext = createContext();
 */
 const BookProvider = ({ children }) => {
   const [books, setBooks] = useState([]);
+  const [interest, setInterest] = useState([]);
   const [loading, setLoading] = useState(true);
 
   /**
@@ -76,6 +77,38 @@ const BookProvider = ({ children }) => {
     } else {
       console.log("Interest already exists for this user and ISBN.");
     }
+  };
+  /**
+   * Get interest for a book
+   * @param {string} isbn - ISBN of the book
+   * @param {string} userId - User ID
+   * @returns {Promise<Object>} - Interest object
+   */
+  const getInterest = async (userId) => {
+    const interestsRef = collection(db, "book_interests");
+    const queryRef = query(interestsRef, where("userId", "==", userId));
+    const snapshot = await getDocs(queryRef);
+    const fetchedInterests = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setInterest(fetchedInterests);
+  };
+
+  /**
+   * Remove interest for a book
+   * @param {string} isbn - ISBN of the book
+   * @param {string} userId - User ID
+   * @returns {Promise<void>} - Promise object
+   */
+  const removeInterest = async (isbn, userId) => {
+    const interestsRef = collection(db, "book_interests");
+    const queryRef = query(interestsRef, where("isbn", "==", isbn), where("userId", "==", userId));
+    const snapshot = await getDocs(queryRef);
+    snapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+      console.log("Interest removed for user:", userId, "for ISBN:", isbn);
+    });
   };
 
   /**
@@ -188,6 +221,7 @@ const BookProvider = ({ children }) => {
   const value = {
     books,
     loading,
+    interest,
     refreshBooks,
     searchBooks,
     addBook,
@@ -196,6 +230,8 @@ const BookProvider = ({ children }) => {
     addInterest,
     notifyInterestedUsers,
     getBookById,
+    removeInterest,
+    getInterest,
   };
 
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;

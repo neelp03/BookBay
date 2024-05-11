@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Modal,
@@ -13,11 +13,12 @@ import { useUser } from "../provider/UserProvider";
 
 const CustomTopNav = ({ title, navigation }) => {
   const { isDarkmode, setTheme } = useTheme();
-  const { books, removeBook, addInterest } = useContext(BookContext);
+  const { books, removeBook, interest, addInterest, removeInterest, getInterest } = useContext(BookContext);
   const { userInfo } = useUser();
   const [menuVisible, setMenuVisible] = useState(false);
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
   const [notifyModalVisible, setNotifyModalVisible] = useState(false);
+  const [interestModalVisible, setInterestModalVisible] = useState(false);
   const [isbnInput, setIsbnInput] = useState('');
 
   const toggleTheme = () => {
@@ -38,6 +39,17 @@ const CustomTopNav = ({ title, navigation }) => {
     }
   };
 
+  const handleRemoveInterest = async (isbn) => {
+    await removeInterest(isbn, userInfo.uid);
+    getInterest(userInfo.uid);
+  };
+
+  useEffect(() => {
+    if (userInfo && userInfo.uid) {
+      getInterest(userInfo.uid);
+    }
+  }, [userInfo, interestModalVisible]);
+  
   return (
     <>
       <TopNav
@@ -86,6 +98,10 @@ const CustomTopNav = ({ title, navigation }) => {
             <Button text="Notify me about a book" onPress={() => {
               setMenuVisible(false);
               setNotifyModalVisible(true);
+            }} style={styles.modalButton} />
+            <Button text="Remove notification sign up" onPress={() => {
+              setMenuVisible(false);
+              setInterestModalVisible(true);
             }} style={styles.modalButton} />
             <Button text="Close Menu" onPress={() => setMenuVisible(false)} style={styles.modalButton} color={themeColor.warning} />
           </View>
@@ -152,6 +168,31 @@ const CustomTopNav = ({ title, navigation }) => {
                 color={themeColor.danger}
               />
             </View>
+          </View>
+        </View>
+      </Modal>
+      {/* Remove notification sign up */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={interestModalVisible}
+        onRequestClose={() => setInterestModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+              {interest.length > 0 ? (
+              interest.map((item) => (
+                <View key={item.id} style={styles.modalBookItem}>
+                  <Text>ISBN: {item.isbn}</Text>
+                  <Button text="Unsubscribe" onPress={() => handleRemoveInterest(item.isbn)} />
+                </View>
+              ))
+            ) : (
+              <Text>No current interests.</Text>
+            )}
+            </ScrollView>
+            <Button text="Close" onPress={() => setInterestModalVisible(false)} style={styles.modalButton} />
           </View>
         </View>
       </Modal>
