@@ -13,7 +13,7 @@ export const MessageProvider = ({ children }) => {
     const [refreshKey, setRefreshKey] = useState(0); // used to trigger refresh
     const user = auth.currentUser;
 
-    const createOrGetConversation = async (participantId) => {
+    const createConversation = async (participantId) => {
         if (!user) return null; // guard clause if user is not logged in
 
         const conversationRef = collection(db, 'conversations');
@@ -101,7 +101,7 @@ export const MessageProvider = ({ children }) => {
             conversations,
             messages,
             loading,
-            createOrGetConversation,
+            createOrGetConversation: createConversation,
             sendMessage,
             fetchMessages,
             markMessagesAsRead,

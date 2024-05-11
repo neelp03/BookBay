@@ -47,7 +47,7 @@ const ConversationItem = ({ conversation, onPress }) => {
 
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={styles.container}>
+      <View style={{...styles.container, backgroundColor: isDarkmode ? themeColor.dark200 : themeColor.white}}>
         <Avatar
           source={{ uri: `https://ui-avatars.com/api/?name=` + otherParticipant.name + `&background=random` }}
           shape='round'
@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: themeColor.white,
   },
   textContainer: {
     marginLeft: 10,

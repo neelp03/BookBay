@@ -14,7 +14,6 @@ export default function DeleteAccount({ navigation }) {
   const handleDeleteAccount = async () => {
     const reauthResult = await reauthenticate(password);
     if (!reauthResult.success) {
-      removeAllUserData(auth.currentUser.uid)
       Alert.alert("Error", "Password is incorrect");
       return;
     }
@@ -26,7 +25,7 @@ export default function DeleteAccount({ navigation }) {
         console.error("Sign out error", error);
       }
     };
-  
+    const deleteData = await removeAllUserData(auth.currentUser.uid);
     const deleteResult = await deleteAccount();
     if (deleteResult.success) {
       Alert.alert("Success", "Account deleted successfully.");
@@ -37,7 +36,11 @@ export default function DeleteAccount({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }}
+      behavior="height"
+      keyboardVerticalOffset={-100}
+    >
       <Layout>
         <TopNav
           backgroundColor="transparent"
@@ -112,16 +115,3 @@ export default function DeleteAccount({ navigation }) {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    gap: 15,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  input: {
-    marginBottom: 20,
-  },
-});
