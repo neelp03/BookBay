@@ -18,14 +18,12 @@ export default function Profile({ navigation }) {
   const { userInfo, updateUserDetails } = useUser();
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(userInfo?.name || '');
-  const [email, setEmail] = useState(userInfo?.email || '');
   const [phoneNo, setPhoneNo] = useState(userInfo?.phoneNo || '');
   const [loading, setLoading] = useState(false);
-  const [emailEdited, setEmailEdited] = useState(false);
 
   const handleSaveChanges = async () => {
     setLoading(true);
-    const result = await updateUserDetails({ name, email, phoneNo });
+    const result = await updateUserDetails({ name, phoneNo });
     if (result.success) {
       Alert.alert("Profile Updated", "Your profile has been updated successfully.");
       setEditMode(false);
@@ -62,19 +60,12 @@ export default function Profile({ navigation }) {
               placeholder="Name"
             />
             <TextInput
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                if (text !== userInfo?.email) setEmailEdited(true);
+              value={userInfo?.email || ''}
+              editable={false}
+              containerStyle={{
+                backgroundColor: themeColor.white200,
               }}
-              placeholder="Email"
-              keyboardType="email-address"
             />
-            {emailEdited && (
-              <Text style={styles.warningText}>
-                Warning: Changing your email will require re-verification and you will be logged out.
-              </Text>
-            )}
             <TextInput
               value={phoneNo}
               onChangeText={setPhoneNo}
@@ -82,12 +73,12 @@ export default function Profile({ navigation }) {
               keyboardType="phone-pad"
             />
             <Button text="Save Changes" onPress={handleSaveChanges} loading={loading} />
-            <Button color={themeColor.warning} text="Cancel" onPress={() => { setEditMode(false); setEmailEdited(false); setEmail(userInfo.email) }} />
+            <Button color={themeColor.warning} text="Cancel" onPress={() => setEditMode(false)} />
           </>
         ) : (
           <>
             <Text size="h2" fontWeight="bold">{name || 'Your Name'}</Text>
-            <Text>{email || 'your.email@example.com'}</Text>
+            <Text>{userInfo?.email || 'your.email@example.com'}</Text>
             <Text>{phoneNo || "Phone: Not set"}</Text>
             <Button text="Edit Profile" onPress={() => setEditMode(true)} />
           </>
@@ -104,11 +95,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10
-  },
-  warningText: {
-    fontSize: 14,
-    color: themeColor.danger,
-    textAlign: 'center',
-    marginTop: 5,
   },
 });
