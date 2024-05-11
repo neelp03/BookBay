@@ -13,8 +13,9 @@ export default function Notifications({ navigation }) {
 
   const onRefresh = useCallback(() => {
     refreshNotifications();
-  }, [refreshNotifications]);
-
+  }
+  , []);
+  
   const getIcon = (type) => {
     switch (type) {
       case 'chat':
@@ -44,7 +45,8 @@ export default function Notifications({ navigation }) {
     <Layout>
       <CustomTopNav title="Notifications" navigation={navigation} />
       {notifications.length === 0 ? (
-        <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }
+      } refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
         >
           <Text>No notifications</Text>
         </ScrollView>

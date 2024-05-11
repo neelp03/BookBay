@@ -19,7 +19,6 @@ export default function ({ navigation }) {
     author: "",
     isbn: "",
     condition: "",
-    status: "available",
     course: "",
     price: "",
     description: ""
@@ -42,7 +41,8 @@ export default function ({ navigation }) {
     const docData = {
       ...bookDetails,
       seller: userInfo.uid,
-      coverUrl: coverUrl
+      coverUrl: coverUrl,
+      status: true
     };
 
     try {

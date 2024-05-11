@@ -23,8 +23,8 @@ export default function EditBook({ route, navigation }) {
     condition: book.condition,
     course: book.course,
     price: book.price,
-    status: book.status === "available",
     coverUrl: book.coverUrl,
+    status: book.status
   });
 
   const handleChange = (name, value) => {
@@ -56,7 +56,7 @@ export default function EditBook({ route, navigation }) {
   const handleSubmit = async () => {
     const updatedBook = {
       ...bookDetails,
-      status: bookDetails.status ? "available" : "unavailable"
+      status: bookDetails.status
     };
 
     try {
