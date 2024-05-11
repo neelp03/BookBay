@@ -47,8 +47,13 @@ export const NotificationProvider = ({ children }) => {
     await updateDoc(notifDoc, { read: true });
   };
 
+  const refreshNotifications = () => {
+    setLoading(true);
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
-    <NotificationContext.Provider value={{ notifications, loading, markAsRead }}>
+    <NotificationContext.Provider value={{ notifications, loading, markAsRead, refreshNotifications }}>
       {children}
     </NotificationContext.Provider>
   );
