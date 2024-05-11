@@ -10,13 +10,23 @@ export const MessageProvider = ({ children }) => {
     const [conversations, setConversations] = useState([]);
     const [messages, setMessages] = useState({});
     const [loading, setLoading] = useState(true);
+    const [refreshKey, setRefreshKey] = useState(0); // used to trigger refresh
     const user = auth.currentUser;
 
     const createOrGetConversation = async (participantId) => {
+        if (!user) return null; // guard clause if user is not logged in
+
         const conversationRef = collection(db, 'conversations');
         const q = query(conversationRef, where('participants', 'array-contains', user.uid));
+
         const querySnapshot = await getDocs(q);
-        let existingConversation = querySnapshot.docs.find(doc => doc.data().participants.includes(participantId));
+        let existingConversation = null;
+
+        querySnapshot.forEach((doc) => {
+            if (doc.data().participants.includes(participantId)) {
+                existingConversation = { id: doc.id, ...doc.data() };
+            }
+        });
 
         if (!existingConversation) {
             const newConversation = {
@@ -26,8 +36,9 @@ export const MessageProvider = ({ children }) => {
             };
             const docRef = await addDoc(conversationRef, newConversation);
             return { id: docRef.id, ...newConversation };
+        } else {
+            return existingConversation;
         }
-        return { id: existingConversation.id, ...existingConversation.data() };
     };
 
     const sendMessage = async (conversationId, text) => {
@@ -38,20 +49,30 @@ export const MessageProvider = ({ children }) => {
             createdAt: new Date(),
             read: false
         };
+
         await addDoc(messageRef, message);
-        await updateDoc(doc(db, `conversations/${conversationId}`), {
-            lastMessage: { text, createdAt: new Date() }
+
+        const conversationDocRef = doc(db, `conversations/${conversationId}`);
+        await updateDoc(conversationDocRef, {
+            lastMessage: {
+                text,
+                createdAt: new Date(),
+                senderId: user.uid
+            }
+        }).then(() => {
+            console.log('Last message updated successfully');
+        }).catch(error => {
+            console.error('Failed to update last message:', error);
         });
     };
 
     const fetchMessages = (conversationId) => {
         const messagesRef = collection(db, `conversations/${conversationId}/messages`);
-        const unsubscribe = onSnapshot(query(messagesRef, orderBy('createdAt', 'asc')),
+        return onSnapshot(query(messagesRef, orderBy('createdAt', 'asc')),
             (snapshot) => {
                 const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setMessages(prev => ({ ...prev, [conversationId]: msgs }));
             });
-        return () => unsubscribe();
     };
 
     const markMessagesAsRead = async (conversationId) => {
@@ -72,8 +93,8 @@ export const MessageProvider = ({ children }) => {
                 setConversations(convos);
                 setLoading(false);
             });
-        return () => unsubscribe(); // Cleanup on unmount
-    }, [user]);
+        return () => unsubscribe();
+    }, [user, refreshKey]); // Depend on refreshKey to allow refresh
 
     return (
         <MessageContext.Provider value={{
@@ -83,7 +104,8 @@ export const MessageProvider = ({ children }) => {
             createOrGetConversation,
             sendMessage,
             fetchMessages,
-            markMessagesAsRead
+            markMessagesAsRead,
+            refreshConversations: () => setRefreshKey(oldKey => oldKey + 1)  // Update refreshKey to trigger a refresh
         }}>
             {children}
         </MessageContext.Provider>

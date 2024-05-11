@@ -1,28 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { ScrollView, View, StyleSheet, KeyboardAvoidingView } from "react-native";
-import { Layout, Text, TextInput, Button, TopNav, useTheme, themeColor } from "react-native-rapi-ui";
-import { useMessage } from "../../provider/MessageProvider";
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, StyleSheet, KeyboardAvoidingView, Platform, TextInput as RNTextInput } from 'react-native';
+import { Layout, Text, TopNav, useTheme, themeColor, Button, TextInput } from 'react-native-rapi-ui';
+import { Ionicons } from '@expo/vector-icons';
+import { useMessage } from '../../provider/MessageProvider';
+import { auth } from '../../../firebase.config';
 
-export default function ConversationScreen({ navigation, route }) {
+export default function ConversationScreen({ route, navigation }) {
   const { conversationId } = route.params;
-  const { messages, fetchMessages, sendMessage, markMessagesAsRead } = useMessage();
-  const [messageText, setMessageText] = useState("");
-  const { isDarkmode } = useTheme();
-  const conversationMessages = messages[conversationId] || [];
+  const { sendMessage, fetchMessages, messages } = useMessage();
+  const [messageText, setMessageText] = useState('');
+  const { isDarkmode, setTheme } = useTheme();
 
   useEffect(() => {
     const unsubscribe = fetchMessages(conversationId);
-    return () => unsubscribe();  // Cleanup subscription on unmount
+    return () => unsubscribe(); // Clean up on unmount
   }, [conversationId]);
 
-  useEffect(() => {
-    markMessagesAsRead(conversationId);
-  }, [conversationMessages]);
-
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (messageText.trim()) {
-      await sendMessage(conversationId, messageText.trim());
-      setMessageText("");
+      sendMessage(conversationId, messageText.trim());
+      setMessageText('');
     }
   };
 
@@ -32,13 +29,17 @@ export default function ConversationScreen({ navigation, route }) {
         middleContent="Conversation"
         leftContent={<Ionicons name="chevron-back" size={20} color={isDarkmode ? themeColor.white100 : themeColor.dark} />}
         leftAction={() => navigation.goBack()}
+        rightContent={<Ionicons name={isDarkmode ? 'sunny' : 'moon'} size={20} color={isDarkmode ? themeColor.white100 : themeColor.dark} />}
+        rightAction={() => setTheme(isDarkmode ? 'light' : 'dark')}
       />
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-        <ScrollView style={styles.messagesContainer}>
-          {conversationMessages.map((msg, index) => (
-            <View key={index} style={styles.messageBubble(isDarkmode, msg.senderId)}>
-              <Text>{msg.text}</Text>
-              <Text style={styles.messageTime}>{new Date(msg.createdAt.seconds * 1000).toLocaleTimeString()}</Text>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.messagesContainer}>
+          {messages[conversationId]?.map((msg, index) => (
+            <View key={index} style={[
+              styles.messageBubble,
+              msg.senderId === auth.currentUser.uid ? styles.sentMessage : styles.receivedMessage
+            ]}>
+              <Text style={{ color: msg.senderId === auth.currentUser.uid ? 'white' : 'black' }}>{msg.text}</Text>
             </View>
           ))}
         </ScrollView>
@@ -46,10 +47,11 @@ export default function ConversationScreen({ navigation, route }) {
           <TextInput
             value={messageText}
             onChangeText={setMessageText}
-            placeholder="Type a message..."
-            style={styles.input}
+            placeholder="Type a message"
+            rightContent={
+              <Ionicons name="send" size={20} color={themeColor.primary} onPress={handleSendMessage} />
+            }
           />
-          <Button text="Send" onPress={handleSendMessage} style={styles.sendButton} />
         </View>
       </KeyboardAvoidingView>
     </Layout>
@@ -58,32 +60,27 @@ export default function ConversationScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   messagesContainer: {
-    flex: 1,
-    padding: 10,
+    padding: 10
   },
-  messageBubble: (isDarkmode, isSender) => ({
+  messageBubble: {
     padding: 10,
-    borderRadius: 10,
-    backgroundColor: isSender ? themeColor.primary : (isDarkmode ? themeColor.dark200 : themeColor.grey200),
-    alignSelf: isSender ? 'flex-end' : 'flex-start',
+    borderRadius: 20,
     marginBottom: 10,
-  }),
-  messageTime: {
-    fontSize: 12,
-    color: themeColor.gray600,
+  },
+  sentMessage: {
+    backgroundColor: themeColor.primary,
     alignSelf: 'flex-end',
-    marginTop: 4,
+  },
+  receivedMessage: {
+    backgroundColor: '#dedede',
+    alignSelf: 'flex-start',
   },
   inputContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
   },
   input: {
     flex: 1,
-    marginRight: 10,
-  },
-  sendButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
   }
 });

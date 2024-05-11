@@ -18,16 +18,16 @@ export default function ({ navigation, route }) {
 
   const contactSeller = async () => {
     try {
-      const conversation = await createOrGetConversation(Book.sellerId);
-      if (conversation) {
-        navigation.navigate('Messages', { screen: 'Conversation', params: { conversationId: conversation.id }});
-      } else {
-        console.error("Failed to retrieve or create conversation.");
-      }
+        const conversation = await createOrGetConversation(Book.seller);
+        if (conversation) {
+            navigation.navigate('Conversation', { conversationId: conversation.id });
+        } else {
+            console.error('Failed to create or fetch conversation');
+        }
     } catch (error) {
-      console.error("Error in contactSeller:", error);
+        console.error('Error in contactSeller:', error);
     }
-  };
+};
 
   return (
     <Layout>

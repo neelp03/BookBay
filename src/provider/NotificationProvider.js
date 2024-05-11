@@ -1,31 +1,21 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { db, auth } from '../../firebase.config'; 
 import { collection, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
 
 const NotificationContext = createContext();
 
-/**
- * useNotifications
- * @returns {Object} Notifications context
- * @returns {Array} notifications - List of notifications
- * @returns {Boolean} loading - Loading state
- * @returns {Function} markAsRead - Mark a notification as read
- */
 export const useNotifications = () => useContext(NotificationContext);
 
-/**
- * NotificationProvider
- * @param {Object} props - Component props
- * @param {Object} props.children - Component children
- * @returns {JSX.Element} NotificationProvider component
- */export const NotificationProvider = ({ children }) => {
+export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);  // Added to trigger useEffect
   const currentUser = auth.currentUser;
 
-  const fetchNotifications = () => {
-    if(!currentUser) {
-      return;
+  const fetchNotifications = useCallback(() => {
+    if (!currentUser) {
+      setLoading(false);
+      return undefined; 
     }
 
     const q = query(
@@ -44,18 +34,13 @@ export const useNotifications = () => useContext(NotificationContext);
       console.error("Error fetching notifications: ", error);
       setLoading(false);
     });
-  };
+
+  }, [currentUser?.uid]);  // Dependency on currentUser.uid
 
   useEffect(() => {
     const unsubscribe = fetchNotifications();
     return () => unsubscribe && unsubscribe();
-  }, []);
-
-  const refreshNotifications = () => {
-    setLoading(true);
-    const unsubscribe = fetchNotifications();
-    return () => unsubscribe && unsubscribe();
-  };
+  }, [fetchNotifications, refreshKey]);  // Depend on refreshKey to allow manual refresh
 
   const markAsRead = async (notificationId) => {
     const notifDoc = doc(db, "notifications", notificationId);
@@ -63,7 +48,7 @@ export const useNotifications = () => useContext(NotificationContext);
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, loading, markAsRead, refreshNotifications }}>
+    <NotificationContext.Provider value={{ notifications, loading, markAsRead }}>
       {children}
     </NotificationContext.Provider>
   );
