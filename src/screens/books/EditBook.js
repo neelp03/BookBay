@@ -8,8 +8,9 @@ import {
   Button,
   Text
 } from "react-native-rapi-ui";
-import { BookContext } from "../provider/BookProvider";
-import CustomTopNav from "../components/CustomTopNav";
+import { BookContext } from "../../provider/BookProvider";
+import CustomTopNav from "../../components/CustomTopNav";
+import ConditionSelector from "../../components/ConditionSelector"; // Make sure the path is correct
 
 export default function EditBook({ route, navigation }) {
   const { book } = route.params;
@@ -20,22 +21,19 @@ export default function EditBook({ route, navigation }) {
     author: book.author,
     isbn: book.isbn,
     description: book.description,
-    condition: book.condition,
+    condition: "New",
     course: book.course,
     price: book.price,
-    status: book.status === "available",
     coverUrl: book.coverUrl,
+    status: book.status
   });
 
   const handleChange = (name, value) => {
     setBookDetails({ ...bookDetails, [name]: value });
-    if (name === "isbn") {
-      setBookDetails({
-        ...bookDetails,
-        [name]: value,
-        coverUrl: `https://covers.openlibrary.org/b/isbn/${value}-M.jpg?default=false`
-      });
-    }
+  };
+
+  const handleConditionChange = (condition) => {
+    setBookDetails({ ...bookDetails, condition });
   };
 
   const handleToggleAvailability = () => {
@@ -56,7 +54,7 @@ export default function EditBook({ route, navigation }) {
   const handleSubmit = async () => {
     const updatedBook = {
       ...bookDetails,
-      status: bookDetails.status ? "available" : "unavailable"
+      status: bookDetails.status
     };
 
     try {
@@ -101,12 +99,7 @@ export default function EditBook({ route, navigation }) {
           onChangeText={(value) => handleChange("description", value)}
           placeholder="Description"
         />
-        <TextInput
-          containerStyle={{ marginTop: 15 }}
-          value={bookDetails.condition}
-          onChangeText={(value) => handleChange("condition", value)}
-          placeholder="Condition"
-        />
+        <ConditionSelector selectedCondition={bookDetails.condition} onSelect={handleConditionChange} />
         <TextInput
           containerStyle={{ marginTop: 15 }}
           value={bookDetails.course}
@@ -135,13 +128,14 @@ export default function EditBook({ route, navigation }) {
           text="Update Book"
           onPress={handleSubmit}
           style={{ marginTop: 20 }}
+          status="warning"
         />
 
         <Button
           text="Delete Book"
           onPress={handleDelete}
           style={{ marginTop: 10 }}
-          color={themeColor.danger}
+          status="danger"
         />
       </View>
     </Layout>

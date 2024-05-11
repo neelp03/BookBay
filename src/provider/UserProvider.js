@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase.config";
 
 /**
@@ -74,11 +74,25 @@ const UserProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  const updateUserDetails = async (updates) => {
+    if (!userInfo) return;
+
+    const userRef = doc(db, "users", userInfo.uid);
+    try {
+      await updateDoc(userRef, updates);
+      setUserInfo({ ...userInfo, ...updates });
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating user data:", error);
+      return { success: false, message: error.message };
+    }
+  };
+  
   /**
    * The value provided by the UserProvider context.
    * @type {UserContextValue}
    */
-  const value = { userInfo, loading };
+  const value = { userInfo, loading, updateUserDetails };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

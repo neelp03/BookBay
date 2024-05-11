@@ -50,13 +50,13 @@ export const useNotifications = () => useContext(NotificationContext);
 
   useEffect(() => {
     const unsubscribe = fetchNotifications();
-    return () => unsubscribe && unsubscribe(); // Detach listener on unmount
+    return () => unsubscribe && unsubscribe();
   }, []);
 
   const refreshNotifications = () => {
     setLoading(true);
     const unsubscribe = fetchNotifications();
-    return () => unsubscribe && unsubscribe(); // Make sure to clean up this listener as well
+    return () => unsubscribe && unsubscribe();
   };
 
   const markAsRead = async (notificationId) => {

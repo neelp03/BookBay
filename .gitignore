@@ -15,3 +15,5 @@ web-build/
 .DS_Store
 node_modules
 firebase.config.js
+
+.vscode

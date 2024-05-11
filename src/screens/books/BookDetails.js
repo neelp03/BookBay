@@ -47,7 +47,13 @@ export default function ({ navigation, route }) {
           {Book.description? Book.description : "No description available."}
         </Text>
         <Text fontWeight="light" style={{ marginTop: 10 }}>
+          Course: {Book.course}
+        </Text>
+        <Text fontWeight="light" style={{ marginTop: 10 }}>
           Condition: {Book.condition}
+        </Text>
+        <Text fontWeight="medium" style={{ marginTop: 10, color: Book.status ? 'green' : 'red'}}>
+          {Book.status ? "Available" : "Unavailable"}
         </Text>
         <Text fontWeight="medium" size="xl" style={{ marginTop: 10 }}>
           ${Book.price}

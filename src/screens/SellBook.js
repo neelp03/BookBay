@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, StyleSheet, Image, Alert, Modal } from "react-native";
+import { View, StyleSheet, Image, Alert, Modal, KeyboardAvoidingView, ScrollView } from "react-native";
 import {
   Layout,
   TextInput,
@@ -10,6 +10,7 @@ import {
 import { useUser } from "../provider/UserProvider";
 import { BookContext } from "../provider/BookProvider";
 import CustomTopNav from "../components/CustomTopNav";
+import ConditionSelector from "../components/ConditionSelector";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -18,11 +19,10 @@ export default function ({ navigation }) {
     title: "",
     author: "",
     isbn: "",
-    condition: "",
-    status: "available",
+    description: "",
+    condition: "New",
     course: "",
-    price: "",
-    description: ""
+    price: ""
   });
   const [coverUrl, setCoverUrl] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,8 +41,9 @@ export default function ({ navigation }) {
   const handleSubmit = async () => {
     const docData = {
       ...bookDetails,
-      seller: userInfo.uid, // Assuming the useUser hook provides the user's UID
-      coverUrl: coverUrl
+      seller: userInfo.uid,
+      coverUrl: coverUrl,
+      status: true
     };
 
     try {
@@ -56,83 +57,95 @@ export default function ({ navigation }) {
     }
   };
 
+  const handleConditionSelect = (condition) => {
+    setBookDetails({ ...bookDetails, condition });
+  };
+
   return (
-    <Layout>
-      <CustomTopNav title="Sell Book" navigation={navigation} />
-      <View
-        style={{
-          flex: 3,
-          padding: 20,
-          backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
-        }}
-      >
-        {/* a button to take to a screen that shows previously posted books */}
-        <Button
-          text="View My Books"
-          onPress={() => navigation.navigate('MyBooks')}
-          style={{ marginBottom: 20 }}
-          color={themeColor.warning}
-        />
-        {Object.keys(bookDetails).map((key) => ((
-          <TextInput
-            key={key}
-            containerStyle={{ marginTop: 15 }}
-            value={bookDetails[key]}
-            onChangeText={(value) => handleChange(key, value)}
-            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-          />
-        )
-        ))}
-
-        <Button
-          text="Fetch Cover"
-          onPress={fetchCover}
-          style={{ marginTop: 20 }}
-          disabled={!bookDetails.title || !bookDetails.isbn || bookDetails.isbn.length < 10 || bookDetails.isbn.length > 13 || isNaN(bookDetails.isbn)}
-        />
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
+    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
+      <Layout>
+        <CustomTopNav title="Sell Book" navigation={navigation} />
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
           }}
         >
-          <View style={styles.centeredView}>
-            <View style={{ ...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white, }}>
-              <Image
-                source={{ uri: coverUrl }}
-                style={{
-                  width: 200,
-                  height: 300,
-                  resizeMode: 'contain',
-                  marginBottom: 20,
-                  borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                }}
+          <View
+            style={{
+              flex: 3,
+              padding: 20,
+              backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+            }}
+          >
+            <Button
+              text="View My Books"
+              onPress={() => navigation.navigate('MyBooks')}
+              style={{ marginBottom: 20 }}
+              color={themeColor.warning}
+            />
+            {Object.keys(bookDetails).map((key) => key !== "condition" && (
+              <TextInput
+                key={key}
+                containerStyle={{ marginTop: 15 }}
+                value={bookDetails[key]}
+                onChangeText={(value) => handleChange(key, value)}
+                placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
               />
-              <Button
-                text="Submit"
-                onPress={handleSubmit}
-                style={{
-                  marginTop: 20,
-                }}
-              />
-              <Button
-                text="Cancel"
-                onPress={() => setModalVisible(false)}
-                style={{
-                  marginTop: 20,
-                }}
-              />
-            </View>
+            ))}
+
+            <ConditionSelector selectedCondition={bookDetails.condition} onSelect={handleConditionSelect} />
+
+            <Button
+              text="Fetch Cover"
+              onPress={fetchCover}
+              style={{ marginTop: 20 }}
+              disabled={!bookDetails.title || !bookDetails.isbn || bookDetails.isbn.length < 10 || bookDetails.isbn.length > 13 || isNaN(bookDetails.isbn)}
+            />
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <View style={styles.centeredView}>
+                <View style={{ ...styles.modalView, backgroundColor: isDarkmode ? themeColor.dark : themeColor.white, }}>
+                  <Image
+                    source={{ uri: coverUrl }}
+                    style={{
+                      width: 200,
+                      height: 300,
+                      resizeMode: 'contain',
+                      marginBottom: 20,
+                      borderColor: isDarkmode ? themeColor.white100 : themeColor.dark,
+                      borderWidth: 1,
+                      borderRadius: 8,
+                    }}
+                  />
+                  <Button
+                    text="Submit"
+                    onPress={handleSubmit}
+                    style={{
+                      marginTop: 20,
+                    }}
+                  />
+                  <Button
+                    text="Cancel"
+                    onPress={() => setModalVisible(false)}
+                    style={{
+                      marginTop: 20,
+                    }}
+                  />
+                </View>
+              </View>
+            </Modal>
           </View>
-        </Modal>
-      </View>
-    </Layout>
+        </ScrollView>
+      </Layout>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Layout, Text, useTheme, themeColor } from "react-native-rapi-ui";
-import { BookContext } from "../provider/BookProvider";
-import { useUser } from "../provider/UserProvider";
-import CustomTopNav from "../components/CustomTopNav";
+import { BookContext } from "../../provider/BookProvider";
+import { useUser } from "../../provider/UserProvider";
+import CustomTopNav from "../../components/CustomTopNav";
 
 export default function MyBooks({ navigation }) {
   const { books } = useContext(BookContext);
@@ -25,6 +25,9 @@ export default function MyBooks({ navigation }) {
       <CustomTopNav title="My Books" navigation={navigation} />
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>
+            Click on a book to edit or remove it
+          </Text>
           {userBooks.length > 0 ? (
             <View style={styles.grid}>
               {userBooks.map((book) => (
