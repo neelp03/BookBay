@@ -3,6 +3,7 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { useTheme, themeColor, Text, TextInput, Button, Layout, TopNav } from 'react-native-rapi-ui';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../provider/AuthProvider';
+import { auth } from '../../../firebase.config';
 
 export default function ChangePassword({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -26,12 +27,20 @@ export default function ChangePassword({ navigation }) {
     const changeResult = await changePassword(newPassword);
     if (changeResult.success) {
       Alert.alert("Success", "Password updated successfully.");
-      signOut();  // Optional: Sign out user after password change
+      handleSignOut(); 
     } else {
       Alert.alert("Error", changeResult.message);
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Sign out error", error);
+    }
+  };
   return (
     <Layout>
       <TopNav
