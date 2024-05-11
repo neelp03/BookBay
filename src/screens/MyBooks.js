@@ -25,6 +25,9 @@ export default function MyBooks({ navigation }) {
       <CustomTopNav title="My Books" navigation={navigation} />
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
+          <Text style={{ textAlign: 'center', marginTop: 20}}>
+            Click on a book to edit or remove it
+          </Text>
           {userBooks.length > 0 ? (
             <View style={styles.grid}>
               {userBooks.map((book) => (

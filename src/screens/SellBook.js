@@ -10,6 +10,7 @@ import {
 import { useUser } from "../provider/UserProvider";
 import { BookContext } from "../provider/BookProvider";
 import CustomTopNav from "../components/CustomTopNav";
+import ConditionSelector from "../components/ConditionSelector";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -18,10 +19,10 @@ export default function ({ navigation }) {
     title: "",
     author: "",
     isbn: "",
-    condition: "",
+    description: "",
+    condition: "New",
     course: "",
-    price: "",
-    description: ""
+    price: ""
   });
   const [coverUrl, setCoverUrl] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -56,10 +57,14 @@ export default function ({ navigation }) {
     }
   };
 
+  const handleConditionSelect = (condition) => {
+    setBookDetails({ ...bookDetails, condition });
+  };
+
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
-      <CustomTopNav title="Sell Book" navigation={navigation} />
+        <CustomTopNav title="Sell Book" navigation={navigation} />
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -78,7 +83,7 @@ export default function ({ navigation }) {
               style={{ marginBottom: 20 }}
               color={themeColor.warning}
             />
-            {Object.keys(bookDetails).map((key) => ((
+            {Object.keys(bookDetails).map((key) => key !== "condition" && (
               <TextInput
                 key={key}
                 containerStyle={{ marginTop: 15 }}
@@ -86,8 +91,9 @@ export default function ({ navigation }) {
                 onChangeText={(value) => handleChange(key, value)}
                 placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
               />
-            )
             ))}
+
+            <ConditionSelector selectedCondition={bookDetails.condition} onSelect={handleConditionSelect} />
 
             <Button
               text="Fetch Cover"
