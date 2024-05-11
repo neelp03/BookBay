@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { ScrollView, Image, StyleSheet } from "react-native";
 import {
   Layout,
@@ -9,20 +9,30 @@ import {
   Button,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
+import { useMessage } from "../../provider/MessageProvider"; 
 
 export default function ({ navigation, route }) {
   const { isDarkmode, setTheme } = useTheme();
   const { Book } = route.params;
+  const { createOrGetConversation } = useMessage(); // Use the context
 
-  const contactSeller = () => {
-    navigation.navigate('MessageTab', { sellerId: Book.sellerId })
+  const contactSeller = async () => {
+    try {
+      const conversation = await createOrGetConversation(Book.sellerId);
+      if (conversation) {
+        navigation.navigate('Messages', { screen: 'Conversation', params: { conversationId: conversation.id }});
+      } else {
+        console.error("Failed to retrieve or create conversation.");
+      }
+    } catch (error) {
+      console.error("Error in contactSeller:", error);
+    }
   };
 
   return (
     <Layout>
       <TopNav
-        // if book title available, show it in the middle, else show 'Book Details'
-        middleContent={Book.title}
+        middleContent={Book.title || "Book Details"}
         leftContent={
           <Ionicons
             name="chevron-back"
@@ -32,7 +42,6 @@ export default function ({ navigation, route }) {
         }
         leftAction={() => navigation.goBack()}
       />
-
       <ScrollView contentContainerStyle={styles.container}>
         <Image
           source={{ uri: Book.coverUrl }}
@@ -40,11 +49,10 @@ export default function ({ navigation, route }) {
           resizeMode="contain"
         />
         <Text fontWeight="bold" size="xl" style={{ marginTop: 20 }}>
-          {Book.title}{" "}
-          {Book.author ? `by ${Book.author}` : ""}
+          {Book.title} {Book.author ? `by ${Book.author}` : ""}
         </Text>
         <Text fontWeight="light" style={{ marginTop: 10, color: themeColor.gray400 }}>
-          {Book.description? Book.description : "No description available."}
+          {Book.description || "No description available."}
         </Text>
         <Text fontWeight="light" style={{ marginTop: 10 }}>
           Course: {Book.course}

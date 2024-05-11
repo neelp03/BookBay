@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, Animated, StyleSheet, Dimensions } from 'react-native';
 import { useTheme, themeColor, Text } from 'react-native-rapi-ui';
 
-const screenWidth = Dimensions.get('window').width - 40; // Get screen width
+const screenWidth = Dimensions.get('window').width - 40; 
 const options = ['New', 'Good', 'Acceptable'];
 const optionWidth = screenWidth / options.length;
 
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 20,
     marginTop: 15,
-    backgroundColor: themeColor.grey100, // Adjust to match your theme
+    backgroundColor: themeColor.grey100,
   },
   highlight: {
     position: 'absolute',

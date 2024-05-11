@@ -7,12 +7,12 @@ import {
   useTheme,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { getAuth, signOut } from "firebase/auth"; // Assuming you are using Firebase Auth
+import { signOut } from "firebase/auth";
+import { auth } from "../../../firebase.config";
 import CustomTopNav from "../../components/CustomTopNav";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
-  const auth = getAuth(); // Get the Firebase Auth instance
 
   const handleSignOut = async () => {
     try {

@@ -24,6 +24,7 @@ import Notifications from "../screens/Notifications";
 import MyBooks from "../screens/books/MyBooks";
 import EditBook from "../screens/books/EditBook";
 import Messages from "../screens/messaging/Messages";
+import Conversation from "../screens/messaging/Conversation";
 
 import Loading from "../screens/utils/Loading";
 import ChangePassword from "../screens/settings/ChangePassword";
@@ -99,6 +100,7 @@ const MainStackScreen = () => {
       <MainStack.Screen name="Notifications" component={Notifications} />
       <MainStack.Screen name="MyBooks" component={MyBooks} />
       <MainStack.Screen name="EditBook" component={EditBook} />
+      <MainStack.Screen name="Conversation" component={Conversation} />
     </MainStack.Navigator>
   );
 };

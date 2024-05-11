@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { db } from '../../firebase.config'; 
-import { getAuth } from 'firebase/auth';
+import { db, auth } from '../../firebase.config'; 
 import { collection, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
 
 const NotificationContext = createContext();
@@ -22,7 +21,6 @@ export const useNotifications = () => useContext(NotificationContext);
  */export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const auth = getAuth();
   const currentUser = auth.currentUser;
 
   const fetchNotifications = () => {

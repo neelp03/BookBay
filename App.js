@@ -9,8 +9,9 @@ import { BookProvider } from "./src/provider/BookProvider";
 import { UserProvider } from "./src/provider/UserProvider";
 import { NotificationProvider } from "./src/provider/NotificationProvider";
 import { ThemeProvider } from "react-native-rapi-ui";
+import { MessageProvider } from './src/provider/MessageProvider';
 
-SplashScreen.preventAutoHideAsync();  // Prevent auto-hiding the splash screen
+SplashScreen.preventAutoHideAsync(); 
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -70,7 +71,9 @@ export default function App() {
         <BookProvider>
           <UserProvider>
             <NotificationProvider>
-              <AppNavigator />
+              <MessageProvider>
+                <AppNavigator />
+              </MessageProvider>
             </NotificationProvider>
           </UserProvider>
         </BookProvider>
