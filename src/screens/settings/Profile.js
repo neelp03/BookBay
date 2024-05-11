@@ -11,7 +11,7 @@ import {
   Button
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { useUser } from "../provider/UserProvider";
+import { useUser } from "../../provider/UserProvider";
 
 export default function Profile({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();

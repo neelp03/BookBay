@@ -8,9 +8,9 @@ import {
   Button,
   Text
 } from "react-native-rapi-ui";
-import { BookContext } from "../provider/BookProvider";
-import CustomTopNav from "../components/CustomTopNav";
-import ConditionSelector from "../components/ConditionSelector"; // Make sure the path is correct
+import { BookContext } from "../../provider/BookProvider";
+import CustomTopNav from "../../components/CustomTopNav";
+import ConditionSelector from "../../components/ConditionSelector"; // Make sure the path is correct
 
 export default function EditBook({ route, navigation }) {
   const { book } = route.params;

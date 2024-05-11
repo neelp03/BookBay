@@ -16,17 +16,18 @@ import ForgetPassword from "../screens/auth/ForgetPassword";
 
 // Additional Tab Screens
 import SearchScreen from "../screens/Search";
-import ProfileScreen from "../screens/Profile";
+import ProfileScreen from "../screens/settings/Profile";
 import SellScreen from "../screens/SellBook";
-import SettingsScreen from "../screens/Settings";
-import BookDetails from "../screens/BookDetails";
+import SettingsScreen from "../screens/settings/Settings";
+import BookDetails from "../screens/books/BookDetails";
 import Notifications from "../screens/Notifications";
-import MyBooks from "../screens/MyBooks";
-import EditBook from "../screens/EditBook";
+import MyBooks from "../screens/books/MyBooks";
+import EditBook from "../screens/books/EditBook";
+import Messages from "../screens/messaging/Messages";
 
 import Loading from "../screens/utils/Loading";
-import ChangePassword from "../screens/ChangePassword";
-import DeleteAccount from "../screens/DeleteAccount";
+import ChangePassword from "../screens/settings/ChangePassword";
+import DeleteAccount from "../screens/settings/DeleteAccount";
 
 const AuthStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
@@ -47,19 +48,22 @@ const TabNavigator = () => {
   const { isDarkmode } = useTheme();
 
   return (
-    <Tab.Navigator 
+    <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           switch (route.name) {
             case 'Home':
-              iconName = 'home';  
+              iconName = 'home';
               break;
             case 'Search':
-              iconName = 'search';  
+              iconName = 'search';
               break;
             case 'Sell':
               iconName = 'add-circle';
+              break;
+            case 'Messages':
+              iconName = 'message';
               break;
             case 'Settings':
               iconName = 'settings';
@@ -80,6 +84,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen name="Sell" component={SellScreen} />
+      <Tab.Screen name="Messages" component={Messages} />
       <Tab.Screen name="Settings" component={SettingsStackScreen} />
     </Tab.Navigator>
   );

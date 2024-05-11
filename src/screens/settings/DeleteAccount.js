@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView, View, StyleSheet, Alert, Image, KeyboardAvoidingView } from "react-native";
 import { useTheme, themeColor, Text, TextInput, Button, Layout, TopNav } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { AuthContext } from "../provider/AuthProvider";
+import { AuthContext } from "../../provider/AuthProvider";
 
 export default function DeleteAccount({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -60,7 +60,7 @@ export default function DeleteAccount({ navigation }) {
                 height: 220,
                 width: 220,
               }}
-              source={require("../../assets/delete-acc.png")}
+              source={require("../../../assets/delete-acc.png")}
             />
           </View>
           <View

@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { FlatList, Text, TouchableOpacity } from 'react-native';
-import { MessageContext } from '../provider/MessageProvider'; // You'll create this
+import { MessageContext } from '../../provider/MessageProvider'; // You'll create this
 
-export default function Message({ navigation }) {
-  const { conversations, loading } = useContext(MessageContext); // Assuming you have a context for messages
+export default function Messages({ navigation }) {
+  const { conversations, loading } = []; // Assuming you have a context for messages
 
   if (loading) return <Text>Loading messages...</Text>;
 

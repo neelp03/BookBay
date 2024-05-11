@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { useTheme, themeColor, Text, TextInput, Button, Layout, TopNav } from 'react-native-rapi-ui';
 import { Ionicons } from '@expo/vector-icons';
-import { AuthContext } from '../provider/AuthProvider';
+import { AuthContext } from '../../provider/AuthProvider';
 
 export default function ChangePassword({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -65,7 +65,7 @@ export default function ChangePassword({ navigation }) {
           secureTextEntry
           style={styles.input}
         />
-        <Text style={{color: isDarkmode ? themeColor.warning300 : themeColor.warning500}}>
+        <Text style={{ color: isDarkmode ? themeColor.warning300 : themeColor.warning500 }}>
           Recommended password format: {'\n\n'}
           - At least 8 characters{'\n'}
           - At least one uppercase letter{'\n'}
