@@ -103,9 +103,10 @@ const CustomTopNav = ({ title, navigation }) => {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
               {books.length > 0 ? (
                 books.map((item) => (
+                  // Show only the books that the user has posted
+                  userInfo && item.seller === userInfo.uid && (
                   <View key={item.id} style={styles.modalBookItem}>
                     <Text>{item.title}</Text>
-                    {userInfo && item.seller === userInfo.uid && (
                       <Button
                         text="Remove"
                         onPress={() => {
@@ -113,9 +114,8 @@ const CustomTopNav = ({ title, navigation }) => {
                           setRemoveModalVisible(false);
                         }}
                       />
-                    )}
                   </View>
-                ))
+                )))
               ) : (
                 <Text>No books available to remove.</Text>
               )}

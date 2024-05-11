@@ -4,9 +4,9 @@
  */
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase.config";
+import { db, auth } from "../../firebase.config";
 
 /**
  * @typedef User
@@ -42,7 +42,6 @@ export const useUser = () => useContext(UserContext);
 const UserProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const auth = getAuth();
 
   /**
    * Fetches the user data from the Firestore database.
@@ -87,12 +86,30 @@ const UserProvider = ({ children }) => {
       return { success: false, message: error.message };
     }
   };
-  
+
+  // Get another user's public data
+  const getUserData = async (uid) => {
+    try {
+      const userDocRef = doc(db, "users", uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const publicData = {avatar: userDoc.data().avatar, name: userDoc.data().name};
+        return { uid: uid, avatar: publicData.avatar, name: publicData.name};
+      } else {
+        console.error("No user data available");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      return null;
+    }
+  };
+
   /**
    * The value provided by the UserProvider context.
    * @type {UserContextValue}
    */
-  const value = { userInfo, loading, updateUserDetails };
+  const value = { userInfo, loading, updateUserDetails, getUserData };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
