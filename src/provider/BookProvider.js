@@ -87,7 +87,7 @@ const BookProvider = ({ children }) => {
   const notifyInterestedUsers = async (bookId) => {
     const bookRef = doc(db, "books", bookId);
     const bookSnap = await getDoc(bookRef);
-    if (!bookSnap.exists() || bookSnap.data().status !== "available") {
+    if (!bookSnap.exists() || !bookSnap.data().status) {
       console.log("No need to notify or book does not exist.");
       return;
     }
@@ -141,6 +141,7 @@ const BookProvider = ({ children }) => {
     try {
       await updateDoc(bookRef, updatedData);
       console.log("Book updated:", bookId);
+      notifyInterestedUsers(bookId);
       refreshBooks();
     } catch (error) {
       console.error("Error updating book:", error);

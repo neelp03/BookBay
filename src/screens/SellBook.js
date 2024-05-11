@@ -26,7 +26,7 @@ export default function ({ navigation }) {
   });
   const [coverUrl, setCoverUrl] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const { addBook } = useContext(BookContext);
+  const { addBook, refreshBooks } = useContext(BookContext);
 
   const handleChange = (name, value) => {
     setBookDetails({ ...bookDetails, [name]: value });
@@ -50,6 +50,7 @@ export default function ({ navigation }) {
       addBook(docData);
       Alert.alert("Success", "Book added successfully!");
       setModalVisible(false);
+      refreshBooks();
       navigation.goBack();
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -99,7 +100,7 @@ export default function ({ navigation }) {
               text="Fetch Cover"
               onPress={fetchCover}
               style={{ marginTop: 20 }}
-              disabled={!bookDetails.title || !bookDetails.isbn || bookDetails.isbn.length < 10 || bookDetails.isbn.length > 13 || isNaN(bookDetails.isbn)}
+              disabled={!bookDetails.title || !bookDetails.isbn  || isNaN(bookDetails.isbn)}
             />
 
             <Modal

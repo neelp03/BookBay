@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from 'react';
+import React, { useContext, useCallback, useEffect } from 'react';
 import { FlatList, ScrollView, RefreshControl } from 'react-native';
 import { Layout, Text, themeColor } from 'react-native-rapi-ui';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,9 +13,11 @@ export default function Notifications({ navigation }) {
 
   const onRefresh = useCallback(() => {
     refreshNotifications();
-  }
-  , []);
-  
+  }, []);
+
+  useEffect(() => {
+    onRefresh();
+  }, []);
   const getIcon = (type) => {
     switch (type) {
       case 'chat':
@@ -41,18 +43,22 @@ export default function Notifications({ navigation }) {
     markAsRead(item.id);
   };
 
+  // Sorting notifications by timestamp in descending order
+  const sortedNotifications = notifications.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+
   return (
     <Layout>
       <CustomTopNav title="Notifications" navigation={navigation} />
-      {notifications.length === 0 ? (
-        <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }
-      } refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
+      {sortedNotifications.length === 0 ? (
+        <ScrollView
+          contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
         >
           <Text>No notifications</Text>
         </ScrollView>
       ) : (
         <FlatList
-          data={notifications}
+          data={sortedNotifications}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <NotificationItem
@@ -64,9 +70,7 @@ export default function Notifications({ navigation }) {
               onPress={() => handlePress(item)}
             />
           )}
-          refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={onRefresh} />
-          }
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
         />
       )}
     </Layout>

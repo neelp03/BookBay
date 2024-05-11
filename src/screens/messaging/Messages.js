@@ -101,6 +101,10 @@ export default function MessagesScreen({ navigation }) {
     );
   };
 
+  useEffect(() => {
+    refreshConversations();
+  }, []);
+  
   return (
     <Layout>
       <CustomTopNav title="Messages" navigation={navigation} />
