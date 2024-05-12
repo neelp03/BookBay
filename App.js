@@ -11,6 +11,12 @@ import { NotificationProvider } from "./src/provider/NotificationProvider";
 import { ThemeProvider } from "react-native-rapi-ui";
 import { MessageProvider } from './src/provider/MessageProvider';
 
+// disable yellow and red box
+console.disableYellowBox = true;
+console.warn = () => { };
+console.error = () => { };
+
+// Prevent native splash screen from autohiding
 SplashScreen.preventAutoHideAsync(); 
 
 export default function App() {

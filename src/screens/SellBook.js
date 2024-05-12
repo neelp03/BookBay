@@ -48,10 +48,19 @@ export default function ({ navigation }) {
 
     try {
       addBook(docData);
+      // reset book details
+      setBookDetails({
+        title: "",
+        author: "",
+        isbn: "",
+        description: "",
+        condition: "New",
+        course: "",
+        price: ""
+      });
       Alert.alert("Success", "Book added successfully!");
       setModalVisible(false);
       refreshBooks();
-      navigation.goBack();
     } catch (error) {
       console.error("Error adding document: ", error);
       Alert.alert("Error", "Could not add the book. Please try again.");
@@ -100,7 +109,7 @@ export default function ({ navigation }) {
               text="Fetch Cover"
               onPress={fetchCover}
               style={{ marginTop: 20 }}
-              disabled={!bookDetails.title || !bookDetails.isbn  || isNaN(bookDetails.isbn)}
+              disabled={!bookDetails.title || !bookDetails.isbn || isNaN(bookDetails.isbn)}
             />
 
             <Modal

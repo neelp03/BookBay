@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { db, auth } from '../../firebase.config'; 
 import { collection, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const NotificationContext = createContext();
 
@@ -9,38 +10,40 @@ export const useNotifications = () => useContext(NotificationContext);
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshKey, setRefreshKey] = useState(0);  // Added to trigger useEffect
-  const currentUser = auth.currentUser;
-
-  const fetchNotifications = useCallback(() => {
-    if (!currentUser) {
-      setLoading(false);
-      return undefined; 
-    }
-
-    const q = query(
-      collection(db, "notifications"),
-      where("userId", "==", currentUser.uid)
-    );
-
-    return onSnapshot(q, (querySnapshot) => {
-      const notifs = [];
-      querySnapshot.forEach((doc) => {
-        notifs.push({ id: doc.id, ...doc.data() });
-      });
-      setNotifications(notifs);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching notifications: ", error);
-      setLoading(false);
-    });
-
-  }, [currentUser?.uid]);  // Dependency on currentUser.uid
+  const [unsubscribeNotifications, setUnsubscribeNotifications] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = fetchNotifications();
-    return () => unsubscribe && unsubscribe();
-  }, [fetchNotifications, refreshKey]);  // Depend on refreshKey to allow manual refresh
+    const authUnsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const q = query(collection(db, "notifications"), where("userId", "==", user.uid));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const notifs = [];
+          querySnapshot.forEach((doc) => {
+            notifs.push({ id: doc.id, ...doc.data() });
+          });
+          setNotifications(notifs);
+          setLoading(false);
+        }, (error) => {
+          setLoading(false);
+        });
+        setUnsubscribeNotifications(() => unsubscribe);
+      } else {
+        if (unsubscribeNotifications) {
+          unsubscribeNotifications();
+          setUnsubscribeNotifications(null);
+        }
+        setNotifications([]);
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      authUnsubscribe();
+      if (unsubscribeNotifications) {
+        unsubscribeNotifications();
+      }
+    };
+  }, []);
 
   const markAsRead = async (notificationId) => {
     const notifDoc = doc(db, "notifications", notificationId);
@@ -49,7 +52,11 @@ export const NotificationProvider = ({ children }) => {
 
   const refreshNotifications = () => {
     setLoading(true);
-    setRefreshKey((prev) => prev + 1);
+    // Trigger a re-fetch if needed
+    if (unsubscribeNotifications) {
+      unsubscribeNotifications();
+      setUnsubscribeNotifications(null);
+    }
   };
 
   return (

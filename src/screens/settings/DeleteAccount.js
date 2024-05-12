@@ -17,26 +17,39 @@ export default function DeleteAccount({ navigation }) {
       Alert.alert("Error", "Password is incorrect");
       return;
     }
-    const handleSignOut = async () => {
-      try {
-        await signOut(auth);
-        navigation.navigate("Login");
-      } catch (error) {
-        console.error("Sign out error", error);
-      }
-    };
-    const deleteData = await removeAllUserData(auth.currentUser.uid);
-    const deleteResult = await deleteAccount();
-    if (deleteResult.success) {
-      Alert.alert("Success", "Account deleted successfully.");
-      handleSignOut();
-    } else {
-      Alert.alert("Error", deleteResult.message);
+    // try {
+    //   await removeAllUserData(auth.currentUser.uid);
+    //   console.log("All user data removed successfully.");
+    // } catch (error) {
+    //   console.error("Error removing user data:", error);
+    //   Alert.alert("Error", "Failed to delete all user data.");
+    //   return;
+    // }
+  
+
+    try {
+      await deleteAccount();
+      console.log("Firebase Auth user deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting Firebase Auth user:", error);
+      Alert.alert("Error", "Failed to delete Firebase Auth user.");
+      return;
+    }
+  
+    // Finally, sign out the user
+    try {
+      await signOut();
+      console.log("User signed out successfully.");
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Sign out error", error);
+      Alert.alert("Error", "Failed to sign out.");
     }
   };
+  
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior="height"
       keyboardVerticalOffset={-100}

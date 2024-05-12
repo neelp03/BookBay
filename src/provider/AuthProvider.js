@@ -7,25 +7,25 @@ import React, { createContext, useState, useEffect } from "react";
 import { onAuthStateChanged, getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "firebase/auth";
 import { auth } from "../../firebase.config";
 
+
+
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
-  function checkLogin() {
-    onAuthStateChanged(auth, (u) => {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
       if (u) {
         setUser(true);
-        // getUserData();
-      } else {
+      } else { 
         setUser(false);
-        // setUserData(null);
       }
-    });
-  }
+    }
+    );
 
-  useEffect(() => {
-    checkLogin();
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const reauthenticate = async (currentPassword) => {
