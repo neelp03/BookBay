@@ -17,17 +17,16 @@ export default function DeleteAccount({ navigation }) {
       Alert.alert("Error", "Password is incorrect");
       return;
     }
-    // First ensure all user data is deleted
-    try {
-      await removeAllUserData(auth.currentUser.uid);
-      console.log("All user data removed successfully.");
-    } catch (error) {
-      console.error("Error removing user data:", error);
-      Alert.alert("Error", "Failed to delete all user data.");
-      return;
-    }
+    // try {
+    //   await removeAllUserData(auth.currentUser.uid);
+    //   console.log("All user data removed successfully.");
+    // } catch (error) {
+    //   console.error("Error removing user data:", error);
+    //   Alert.alert("Error", "Failed to delete all user data.");
+    //   return;
+    // }
   
-    // Then delete the account from Firebase Auth
+
     try {
       await deleteAccount();
       console.log("Firebase Auth user deleted successfully.");
