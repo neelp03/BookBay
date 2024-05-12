@@ -1,20 +1,25 @@
+// Import necessary React hooks and Firebase Firestore methods
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { collection, addDoc, query, where, onSnapshot, doc, updateDoc, getDocs, orderBy } from 'firebase/firestore';
 import { auth, db } from '../../firebase.config';
 
+// Create a context for messaging
 const MessageContext = createContext();
 
+// Hook for consuming the message context easily
 export const useMessage = () => useContext(MessageContext);
 
+// Provides context for managing messaging functionality
 export const MessageProvider = ({ children }) => {
-    const [conversations, setConversations] = useState([]);
-    const [messages, setMessages] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [refreshKey, setRefreshKey] = useState(0); // used to trigger refresh
-    const user = auth.currentUser;
+    const [conversations, setConversations] = useState([]); // Store conversations
+    const [messages, setMessages] = useState({}); // Store messages for each conversation
+    const [loading, setLoading] = useState(true); // Manage loading state
+    const [refreshKey, setRefreshKey] = useState(0); // Key to trigger refresh of conversations
+    const user = auth.currentUser; // Current authenticated user
 
+    // Create a new conversation with another user
     const createConversation = async (participantId) => {
-        if (!user) return null; // guard clause if user is not logged in
+        if (!user) return null; // Guard clause if no user is logged in
 
         const conversationRef = collection(db, 'conversations');
         const q = query(conversationRef, where('participants', 'array-contains', user.uid));
@@ -22,12 +27,14 @@ export const MessageProvider = ({ children }) => {
         const querySnapshot = await getDocs(q);
         let existingConversation = null;
 
+        // Check if a conversation with the specified participant already exists
         querySnapshot.forEach((doc) => {
             if (doc.data().participants.includes(participantId)) {
                 existingConversation = { id: doc.id, ...doc.data() };
             }
         });
 
+        // Create a new conversation if it doesn't exist
         if (!existingConversation) {
             const newConversation = {
                 participants: [user.uid, participantId],
@@ -41,6 +48,7 @@ export const MessageProvider = ({ children }) => {
         }
     };
 
+    // Send a message in a conversation
     const sendMessage = async (conversationId, text) => {
         const messageRef = collection(db, `conversations/${conversationId}/messages`);
         const message = {
@@ -66,6 +74,7 @@ export const MessageProvider = ({ children }) => {
         });
     };
 
+    // Fetch all messages for a conversation
     const fetchMessages = (conversationId) => {
         const messagesRef = collection(db, `conversations/${conversationId}/messages`);
         return onSnapshot(query(messagesRef, orderBy('createdAt', 'asc')),
@@ -75,6 +84,7 @@ export const MessageProvider = ({ children }) => {
             });
     };
 
+    // Mark all unread messages in a conversation as read
     const markMessagesAsRead = async (conversationId) => {
         const messagesRef = collection(db, `conversations/${conversationId}/messages`);
         const unreadMessagesQuery = query(messagesRef, where('read', '==', false), where('senderId', '!=', user.uid));
@@ -84,6 +94,7 @@ export const MessageProvider = ({ children }) => {
         });
     };
 
+    // Listen for updates to conversations involving the current user
     useEffect(() => {
         if (!user) return;
 
@@ -94,8 +105,9 @@ export const MessageProvider = ({ children }) => {
                 setLoading(false);
             });
         return () => unsubscribe();
-    }, [user, refreshKey]); // Depend on refreshKey to allow refresh
+    }, [user, refreshKey]); // Refresh when user changes or when refreshKey changes
 
+    // Return the context provider with exposed context values
     return (
         <MessageContext.Provider value={{
             conversations,
@@ -105,7 +117,7 @@ export const MessageProvider = ({ children }) => {
             sendMessage,
             fetchMessages,
             markMessagesAsRead,
-            refreshConversations: () => setRefreshKey(oldKey => oldKey + 1),
+            refreshConversations: () => setRefreshKey(oldKey => oldKey + 1), // Method to trigger a refresh of conversations
         }}>
             {children}
         </MessageContext.Provider>

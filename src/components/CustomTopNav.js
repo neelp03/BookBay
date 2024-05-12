@@ -1,55 +1,62 @@
+// Import necessary React and React Native components, hooks, and other utilities
 import React, { useState, useContext, useEffect } from 'react';
-import {
-  View,
-  Modal,
-  ScrollView,
-  StyleSheet
-} from "react-native";
+import { View, Modal, ScrollView, StyleSheet } from "react-native";
 import { TextInput, Button, Text, TopNav, useTheme, themeColor } from 'react-native-rapi-ui';
 import { Ionicons } from '@expo/vector-icons';
 import { BookContext } from "../provider/BookProvider";
 import { useUser } from "../provider/UserProvider";
 
-
+/**
+ * CustomTopNav component that provides a customizable navigation bar with various functionalities.
+ * It includes theme switching, navigating to notifications, and managing book-related operations.
+ * 
+ * @param {string} title - Title to display in the top navigation bar.
+ * @param {object} navigation - Navigation object to handle routing.
+ */
 const CustomTopNav = ({ title, navigation }) => {
-  const { isDarkmode, setTheme } = useTheme();
-  const { books, removeBook, interest, addInterest, removeInterest, getInterest } = useContext(BookContext);
-  const { userInfo } = useUser();
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [removeModalVisible, setRemoveModalVisible] = useState(false);
-  const [notifyModalVisible, setNotifyModalVisible] = useState(false);
-  const [interestModalVisible, setInterestModalVisible] = useState(false);
-  const [isbnInput, setIsbnInput] = useState('');
+  const { isDarkmode, setTheme } = useTheme(); // Hook to access and modify theme settings
+  const { books, removeBook, interest, addInterest, removeInterest, getInterest } = useContext(BookContext); // Context to manage book data and operations
+  const { userInfo } = useUser(); // Context to access user information
+  const [menuVisible, setMenuVisible] = useState(false); // State to control the visibility of the menu modal
+  const [removeModalVisible, setRemoveModalVisible] = useState(false); // State to control the visibility of the remove books modal
+  const [notifyModalVisible, setNotifyModalVisible] = useState(false); // State to control the visibility of the notification modal
+  const [interestModalVisible, setInterestModalVisible] = useState(false); // State to control the visibility of the interest removal modal
+  const [isbnInput, setIsbnInput] = useState(''); // State for handling ISBN input in the notification modal
 
+  // Function to toggle the theme between light and dark modes
   const toggleTheme = () => {
     setTheme(isDarkmode ? 'light' : 'dark');
   };
 
+  // Function to navigate to the notifications screen
   const openNotifications = () => {
     navigation.navigate('Notifications');
   };
 
+  // Function to handle submission of the notification request
   const handleNotifySubmit = async () => {
     if (isbnInput.trim() && userInfo) {
-      // Call the function from BookContext to register interest
       await addInterest(isbnInput.trim(), userInfo.uid);
       console.log("Notification request saved for ISBN:", isbnInput);
-      setIsbnInput(''); 
-      setNotifyModalVisible(false);
+      setIsbnInput(''); // Clear the input field
+      setNotifyModalVisible(false); // Close the modal
     }
   };
 
+  // Function to handle the removal of interest in a book
   const handleRemoveInterest = async (isbn) => {
     await removeInterest(isbn, userInfo.uid);
-    getInterest(userInfo.uid);
+    getInterest(userInfo.uid); // Refresh the list of interests
   };
 
+  // Effect to fetch interests when the user info or modal visibility changes
   useEffect(() => {
     if (userInfo && userInfo.uid) {
       getInterest(userInfo.uid);
     }
   }, [userInfo, interestModalVisible]);
-  
+
+  // Render the component and all its modals
   return (
     <>
       <TopNav
@@ -57,7 +64,6 @@ const CustomTopNav = ({ title, navigation }) => {
         borderColor='transparent'
         middleContent={title}
         leftContent={
-          // show the menu icon only if title is not notifications, else show back icon
           (title !== 'My Books' && title !== 'Edit Book' && title !== 'Notifications') ? (
             <Ionicons name="menu" size={25} color={isDarkmode ? themeColor.white100 : themeColor.dark} onPress={() => setMenuVisible(true)} />
           ) : (
@@ -65,14 +71,13 @@ const CustomTopNav = ({ title, navigation }) => {
           )
         }
         rightContent={
-          // show the notification icon only if title is not notifications
           <View style={styles.iconContainer}>
-          {title !== 'Notifications' && (<Ionicons
-              name="notifications"
-              size={25}
-              color={isDarkmode ? themeColor.white100 : themeColor.dark}
-              onPress={openNotifications}
-            />)}
+            {title !== 'Notifications' && <Ionicons
+                name="notifications"
+                size={25}
+                color={isDarkmode ? themeColor.white100 : themeColor.dark}
+                onPress={openNotifications}
+              />}
             <Ionicons
               name={isDarkmode ? 'sunny' : 'moon'}
               size={25}
@@ -82,32 +87,37 @@ const CustomTopNav = ({ title, navigation }) => {
           </View>
         }
       />
-      {/* Menu Modal */}
+      {/* Modal for menu options */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={menuVisible}
         onRequestClose={() => setMenuVisible(false)}
       >
+        {/* Modal content */}
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
+            {/* Button for removing books */}
             <Button text="Remove Books" onPress={() => {
               setMenuVisible(false);
               setRemoveModalVisible(true);
             }} style={styles.modalButton} />
+            {/* Button for adding notification sign up */}
             <Button text="Notify me about a book" onPress={() => {
               setMenuVisible(false);
               setNotifyModalVisible(true);
             }} style={styles.modalButton} />
+            {/* Button for removing notification sign up */}
             <Button text="Remove notification sign up" onPress={() => {
               setMenuVisible(false);
               setInterestModalVisible(true);
             }} style={styles.modalButton} />
+            {/* Button to close the menu */}
             <Button text="Close Menu" onPress={() => setMenuVisible(false)} style={styles.modalButton} color={themeColor.warning} />
           </View>
         </View>
       </Modal>
-      {/* Remove Books Modal */}
+      {/* Modal for removing books */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -119,7 +129,6 @@ const CustomTopNav = ({ title, navigation }) => {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
               {books.length > 0 ? (
                 books.map((item) => (
-                  // Show only the books that the user has posted
                   userInfo && item.seller === userInfo.uid && (
                   <View key={item.id} style={styles.modalBookItem}>
                     <Text>{item.title}</Text>
@@ -140,7 +149,7 @@ const CustomTopNav = ({ title, navigation }) => {
           </View>
         </View>
       </Modal>
-      {/* Notify Modal */}
+      {/* Modal for notifying about a book */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -171,7 +180,7 @@ const CustomTopNav = ({ title, navigation }) => {
           </View>
         </View>
       </Modal>
-      {/* Remove notification sign up */}
+      {/* Modal for removing notification sign up */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -202,7 +211,7 @@ const CustomTopNav = ({ title, navigation }) => {
 
 export default CustomTopNav;
 
-
+// StyleSheet definitions for the component
 const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
@@ -211,7 +220,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Semi-transparent overlay for modals
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -225,7 +234,7 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 10,
-    width: '100%',
+    width: '100%', // Buttons take the full width of their container
   },
   centeredView: {
     justifyContent: 'center',

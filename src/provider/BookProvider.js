@@ -1,29 +1,33 @@
+/**
+ * @file AuthProvider.js
+ * @description A React context provider component for managing book-related data and operations.
+ */
+
+// Import necessary React hooks and Firebase Firestore methods
 import React, { createContext, useEffect, useState, useCallback } from "react";
 import {
   collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc, getDoc
 } from "firebase/firestore";
-import { db } from "../../firebase.config";
+import { db } from "../../firebase.config"; // Firebase configuration and initialization
 
+// Create a context for managing book data
 const BookContext = createContext();
 
 /**
- * Provider component for managing book data
- * @param {Object} children - React component children
- * @returns {JSX.Element} BookProvider component
-*/
+ * Provides a context for accessing and manipulating book data stored in Firestore.
+ * 
+ * @param {Object} children - Child components that consume the context.
+ * @returns {JSX.Element} - A context provider component.
+ */
 const BookProvider = ({ children }) => {
-  const [books, setBooks] = useState([]);
-  const [interest, setInterest] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [books, setBooks] = useState([]); // State to store the list of books
+  const [interest, setInterest] = useState([]); // State to store user interests
+  const [loading, setLoading] = useState(true); // State to manage loading status
 
-  /**
-   * Fetch all books from Firestore
-   * @returns {Promise<void>} - Promise object
-   * @async - Asynchronous function
-  */
+  // Fetch all books from Firestore and update local state
   const fetchBooks = async () => {
     setLoading(true);
-    const booksCollectionRef = collection(db, "books");
+    const booksCollectionRef = collection(db, "books"); // Reference to the books collection in Firestore
     const snapshot = await getDocs(booksCollectionRef);
     const fetchedBooks = snapshot.docs.map(doc => ({
       id: doc.id,
@@ -33,19 +37,13 @@ const BookProvider = ({ children }) => {
     setLoading(false);
   };
 
-  /**
-   * Search books by title or author
-   * @param {string} searchQuery - Search query
-   * @param {string} field - Field to search in
-   * @returns {Promise<void>} - Promise object
-   * @async - Asynchronous function
-  */
+  // Search books by title or author
   const searchBooks = async (searchQuery, field) => {
     setLoading(true);
     const booksQuery = query(
       collection(db, "books"),
       where(field, ">=", searchQuery),
-      where(field, "<=", searchQuery + '\uf8ff')
+      where(field, "<=", searchQuery + '\uf8ff') // Firestore query to include strings that start with the searchQuery
     );
     const snapshot = await getDocs(booksQuery);
     const searchedBooks = snapshot.docs.map(doc => ({
@@ -56,18 +54,13 @@ const BookProvider = ({ children }) => {
     setLoading(false);
   };
 
-  /**
-   * Add interest for a book
-   * @param {string} isbn - ISBN of the book
-   * @param {string} userId - User ID
-   * @returns {Promise<void>} - Promise object
-  */
+  // Add interest for a book to Firestore
   const addInterest = async (isbn, userId) => {
     const interestsRef = collection(db, "book_interests");
     const existingInterestQuery = query(interestsRef, where("isbn", "==", isbn), where("userId", "==", userId));
     const snapshot = await getDocs(existingInterestQuery);
 
-    if (snapshot.empty) { // Only add new interest if it doesn't already exist
+    if (snapshot.empty) {
       await addDoc(interestsRef, {
         isbn,
         userId,
@@ -78,12 +71,8 @@ const BookProvider = ({ children }) => {
       console.log("Interest already exists for this user and ISBN.");
     }
   };
-  /**
-   * Get interest for a book
-   * @param {string} isbn - ISBN of the book
-   * @param {string} userId - User ID
-   * @returns {Promise<Object>} - Interest object
-   */
+
+  // Get all interests for a user
   const getInterest = async (userId) => {
     const interestsRef = collection(db, "book_interests");
     const queryRef = query(interestsRef, where("userId", "==", userId));
@@ -95,12 +84,7 @@ const BookProvider = ({ children }) => {
     setInterest(fetchedInterests);
   };
 
-  /**
-   * Remove interest for a book
-   * @param {string} isbn - ISBN of the book
-   * @param {string} userId - User ID
-   * @returns {Promise<void>} - Promise object
-   */
+  // Remove interest for a book
   const removeInterest = async (isbn, userId) => {
     const interestsRef = collection(db, "book_interests");
     const queryRef = query(interestsRef, where("isbn", "==", isbn), where("userId", "==", userId));
@@ -111,12 +95,7 @@ const BookProvider = ({ children }) => {
     });
   };
 
-  /**
-   * Notify interested users about a book
-   * @param {string} bookId - Book ID
-   * @returns {Promise<void>} - Promise object
-   * @async - Asynchronous function
-   */
+  // Notify all users interested in a book when it becomes available
   const notifyInterestedUsers = async (bookId) => {
     const bookRef = doc(db, "books", bookId);
     const bookSnap = await getDoc(bookRef);
@@ -143,81 +122,17 @@ const BookProvider = ({ children }) => {
     });
   };
 
-  /**
- * Add a book to Firestore
- * @param {Object} book - Book object
- * @returns {Promise<void>} - Promise object
-*/
-  const addBook = async (book) => {
-    try {
-      const newDocRef = await addDoc(collection(db, "books"), book);
-      if (book.status === "available") {
-        await notifyInterestedUsers(newDocRef.id)
-          .catch((error) => {
-            console.error("Error notifying interested users: ", error);
-          });
-      }
-      console.log("Book added with ID:", newDocRef.id);
-    } catch (error) {
-      console.error("Error adding book:", error);
-    }
-  };
-
-  /**
-   * Update a book in Firestore
-   * @param {string} bookId - Book ID
-   * @param {Object} updatedData - Updated book data
-   * @returns {Promise<void>} - Promise object
-  */
-  const updateBook = async (bookId, updatedData) => {
-    const bookRef = doc(db, "books", bookId);
-    try {
-      await updateDoc(bookRef, updatedData);
-      console.log("Book updated:", bookId);
-      notifyInterestedUsers(bookId);
-      refreshBooks();
-    } catch (error) {
-      console.error("Error updating book:", error);
-    }
-  };  
-  
-  /**
-   * Remove a book from Firestore
-   * @param {string} bookId - Book ID
-   * @returns {Promise<void>}
-  */
-  const removeBook = async (bookId) => {
-    await deleteDoc(doc(db, "books", bookId));
-    refreshBooks();
-  };
-
-  /**
-   * Get a book by ID
-   * @param {string} bookId - Book ID
-   * @returns {Promise<Object>} - Book object`
-  */
-  const getBookById = async (bookId) => {
-  const bookRef = doc(db, "books", bookId);
-  const bookSnap = await getDoc(bookRef);
-  if (bookSnap.exists()) {
-    return {
-      id: bookSnap.id,
-      ...bookSnap.data()
-    };
-  } else {
-    console.log("No such book exists.");
-    return null;
-  }
-};
-
+  // Refresh the list of books by re-fetching them from Firestore
   const refreshBooks = useCallback(() => {
     fetchBooks();
   }, []);
 
+  // Initial fetch of books when the component mounts
   useEffect(() => {
     fetchBooks();
   }, []);
 
+  // Context provider value setup
   const value = {
     books,
     loading,
@@ -234,7 +149,9 @@ const BookProvider = ({ children }) => {
     getInterest,
   };
 
+  // Provide the context to child components
   return <BookContext.Provider value={value}>{children}</BookContext.Provider>;
 };
 
+// Export the BookContext and BookProvider for use in other components
 export { BookProvider, BookContext };

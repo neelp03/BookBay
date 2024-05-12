@@ -3,8 +3,6 @@ import { ScrollView, View, StyleSheet, Alert, Image, KeyboardAvoidingView } from
 import { useTheme, themeColor, Text, TextInput, Button, Layout, TopNav } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
 import { AuthContext } from "../../provider/AuthProvider";
-import { removeAllUserData } from "../../provider/DeleteAccountProvider";
-import { auth } from "../../../firebase.config";
 
 export default function DeleteAccount({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -17,15 +15,6 @@ export default function DeleteAccount({ navigation }) {
       Alert.alert("Error", "Password is incorrect");
       return;
     }
-    // try {
-    //   await removeAllUserData(auth.currentUser.uid);
-    //   console.log("All user data removed successfully.");
-    // } catch (error) {
-    //   console.error("Error removing user data:", error);
-    //   Alert.alert("Error", "Failed to delete all user data.");
-    //   return;
-    // }
-  
 
     try {
       await deleteAccount();
