@@ -1,20 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, StyleSheet, KeyboardAvoidingView, Platform, TextInput as RNTextInput } from 'react-native';
-import { Layout, Text, TopNav, useTheme, themeColor, Button, TextInput } from 'react-native-rapi-ui';
+import { ScrollView, View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { Layout, Text, TopNav, useTheme, themeColor, TextInput, Button } from 'react-native-rapi-ui';
 import { Ionicons } from '@expo/vector-icons';
 import { useMessage } from '../../provider/MessageProvider';
+import { useUser } from '../../provider/UserProvider';
 import { auth } from '../../../firebase.config';
 
 export default function ConversationScreen({ route, navigation }) {
   const { conversationId } = route.params;
-  const { sendMessage, fetchMessages, messages } = useMessage();
+  const { sendMessage, fetchMessages, messages, conversations } = useMessage();
   const [messageText, setMessageText] = useState('');
   const { isDarkmode, setTheme } = useTheme();
+  const { getUserData } = useUser();
+  const [otherParticipantName, setOtherParticipantName] = useState("Loading...");
 
   useEffect(() => {
     const unsubscribe = fetchMessages(conversationId);
     return () => unsubscribe(); // Clean up on unmount
   }, [conversationId]);
+
+  useEffect(() => {
+    const conversation = conversations.find(convo => convo.id === conversationId);
+    const otherUserId = conversation?.participants.find(p => p !== auth.currentUser.uid);
+    if (otherUserId) {
+      getUserData(otherUserId).then(userData => {
+        if (userData) {
+          setOtherParticipantName(userData.name);
+        } else {
+          setOtherParticipantName("Unknown");
+        }
+      });
+    }
+  }, [conversations, conversationId]);
 
   const handleSendMessage = () => {
     if (messageText.trim()) {
@@ -26,7 +43,7 @@ export default function ConversationScreen({ route, navigation }) {
   return (
     <Layout>
       <TopNav
-        middleContent="Conversation"
+        middleContent={otherParticipantName}
         leftContent={<Ionicons name="chevron-back" size={20} color={isDarkmode ? themeColor.white100 : themeColor.dark} />}
         leftAction={() => navigation.goBack()}
         rightContent={<Ionicons name={isDarkmode ? 'sunny' : 'moon'} size={20} color={isDarkmode ? themeColor.white100 : themeColor.dark} />}
@@ -80,7 +97,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
   },
-  input: {
-    flex: 1,
-  }
 });

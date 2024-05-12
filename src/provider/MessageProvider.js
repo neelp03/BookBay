@@ -101,11 +101,11 @@ export const MessageProvider = ({ children }) => {
             conversations,
             messages,
             loading,
-            createOrGetConversation: createConversation,
+            createConversation,
             sendMessage,
             fetchMessages,
             markMessagesAsRead,
-            refreshConversations: () => setRefreshKey(oldKey => oldKey + 1)  // Update refreshKey to trigger a refresh
+            refreshConversations: () => setRefreshKey(oldKey => oldKey + 1),
         }}>
             {children}
         </MessageContext.Provider>

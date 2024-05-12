@@ -10,15 +10,16 @@ import {
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
 import { useMessage } from "../../provider/MessageProvider"; 
+import { auth } from "../../../firebase.config";
 
 export default function ({ navigation, route }) {
   const { isDarkmode, setTheme } = useTheme();
   const { Book } = route.params;
-  const { createOrGetConversation } = useMessage(); // Use the context
+  const { createConversation } = useMessage(); // Use the context
 
   const contactSeller = async () => {
     try {
-        const conversation = await createOrGetConversation(Book.seller);
+        const conversation = await createConversation(Book.seller);
         if (conversation) {
             navigation.navigate('Conversation', { conversationId: conversation.id });
         } else {
@@ -66,12 +67,19 @@ export default function ({ navigation, route }) {
         <Text fontWeight="medium" size="xl" style={{ marginTop: 10 }}>
           ${Book.price}
         </Text>
-
-        <Button
+        {
+          Book.seller == auth.currentUser.uid ? (
+            <Button
+              text="Edit"
+              onPress={() => navigation.navigate("EditBook", { Book })}
+              style={{ marginTop: 20 }}
+            />
+          ) : <Button
           text="Contact Seller"
           onPress={contactSeller}
           style={{ marginTop: 20 }}
         />
+        }
       </ScrollView>
     </Layout>
   );
