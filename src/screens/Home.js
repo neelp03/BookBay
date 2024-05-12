@@ -15,6 +15,7 @@ import {
 } from "react-native-rapi-ui";
 import { BookContext } from "../provider/BookProvider";
 import CustomTopNav from "../components/CustomTopNav";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
@@ -36,6 +37,11 @@ export default function ({ navigation }) {
     }
   }, [refreshBooks]);
 
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh();
+    }, [refreshBooks])
+  );
   return (
     <Layout>
       <CustomTopNav title="Home" navigation={navigation} />
