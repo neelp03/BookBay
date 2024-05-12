@@ -9,7 +9,7 @@ import {
   Button,
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
-import { useMessage } from "../../provider/MessageProvider"; 
+import { useMessage } from "../../provider/MessageProvider";
 import { auth } from "../../../firebase.config";
 
 export default function ({ navigation, route }) {
@@ -19,16 +19,18 @@ export default function ({ navigation, route }) {
 
   const contactSeller = async () => {
     try {
-        const conversation = await createConversation(Book.seller);
-        if (conversation) {
-            navigation.navigate('Conversation', { conversationId: conversation.id });
-        } else {
-            console.error('Failed to create or fetch conversation');
-        }
+      const conversation = await createConversation(Book.seller);
+      if (conversation) {
+        navigation.navigate('Conversation', { conversationId: conversation.id });
+      }
     } catch (error) {
-        console.error('Error in contactSeller:', error);
+      console.error('Error in contactSeller:', error);
     }
-};
+  };
+
+  const handleEdit = () => {
+    navigation.navigate("EditBook", { book: Book });
+  }
 
   return (
     <Layout>
@@ -61,7 +63,7 @@ export default function ({ navigation, route }) {
         <Text fontWeight="light" style={{ marginTop: 10 }}>
           Condition: {Book.condition}
         </Text>
-        <Text fontWeight="medium" style={{ marginTop: 10, color: Book.status ? 'green' : 'red'}}>
+        <Text fontWeight="medium" style={{ marginTop: 10, color: Book.status ? 'green' : 'red' }}>
           {Book.status ? "Available" : "Unavailable"}
         </Text>
         <Text fontWeight="medium" size="xl" style={{ marginTop: 10 }}>
@@ -71,14 +73,14 @@ export default function ({ navigation, route }) {
           Book.seller == auth.currentUser.uid ? (
             <Button
               text="Edit"
-              onPress={() => navigation.navigate("EditBook", { Book })}
+              onPress={handleEdit}
               style={{ marginTop: 20 }}
             />
           ) : <Button
-          text="Contact Seller"
-          onPress={contactSeller}
-          style={{ marginTop: 20 }}
-        />
+            text="Contact Seller"
+            onPress={contactSeller}
+            style={{ marginTop: 20 }}
+          />
         }
       </ScrollView>
     </Layout>
